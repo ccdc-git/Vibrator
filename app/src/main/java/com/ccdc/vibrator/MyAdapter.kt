@@ -2,16 +2,14 @@ package com.ccdc.vibrator
 
 import android.graphics.Color
 import android.util.Log
-import android.view.DragEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.recycle_items.view.*
+import java.util.*
 
-class MyAdapter(private var myDataset: MutableList<OneShot>) :
+class MyAdapter(private var myDataset: MutableList<OneShot>,private val startDragListener: OnStartDragListener) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>(),
     DragCallbackListener.Listener{
 
@@ -36,17 +34,12 @@ class MyAdapter(private var myDataset: MutableList<OneShot>) :
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.recyclerItem.setOnClickListener {v ->
-            this.removeItemAt(holder.adapterPosition)
-        }
-        holder.recyclerItem.setOnDragListener { v, event ->
-            val dragEvent = event.action
-            when(dragEvent){
-                DragEvent.ACTION_DRAG_ENTERED -> Log.i("drag","Entered")
-                DragEvent.ACTION_DRAG_EXITED -> Log.i("drag","Exited")
-                DragEvent.ACTION_DROP -> Log.i("drag","Dropped")
+
+        holder.recyclerItem.setOnTouchListener { _, event ->
+            if(event.action == MotionEvent.ACTION_DOWN){
+                this.startDragListener.onStartDrag(holder)
             }
-            return@setOnDragListener true
+            return@setOnTouchListener true
         }
 
         (holder.recyclerItem.RecyclerView_TextView_title as TextView).text = myDataset[position].codeName
@@ -55,19 +48,6 @@ class MyAdapter(private var myDataset: MutableList<OneShot>) :
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = myDataset.size
-
-    fun swapItems(fromPosition: Int, toPosition: Int) {
-        if (fromPosition < toPosition) {
-            for (i in fromPosition..toPosition - 1) {
-                myDataset.set(i, myDataset.set(i+1, myDataset.get(i)));
-            }
-        } else {
-            for (i in fromPosition..toPosition + 1) {
-                myDataset.set(i, myDataset.set(i-1, myDataset.get(i)));
-            }
-        }
-        this.notifyItemMoved(fromPosition, toPosition)
-    }
 
     fun removeItemAt(index : Int ) : Boolean{
         return try {
@@ -99,16 +79,30 @@ class MyAdapter(private var myDataset: MutableList<OneShot>) :
         return true
     }
 
-    override fun onRowMoved(adapterPosition: Int, adapterPosition1: Int) {
-
+    override fun onRowMoved(fromPosition: Int, toPosition: Int) {
+        Log.i("Moved","from $fromPosition to $toPosition")
+        if(fromPosition < toPosition){
+            for(i in fromPosition until toPosition){
+                Collections.swap(myDataset,i,i+1)
+            }
+        }else{
+            for(i in fromPosition until toPosition){
+                Collections.swap(myDataset,i,i-1)
+            }
+        }
+        notifyItemMoved(fromPosition,toPosition )
     }
 
     override fun onRowSelected(viewHolder: MyAdapter.MyViewHolder) {
-
+        Log.i("selected",viewHolder.adapterPosition.toString())
     }
 
     override fun onRowCleared(viewHolder: MyAdapter.MyViewHolder) {
+        Log.i("Cleared",viewHolder.adapterPosition.toString())
+    }
 
+    override fun onSwiped(itemViewHolder: MyViewHolder) {
+        removeItemAt(itemViewHolder.adapterPosition)
     }
 
 }

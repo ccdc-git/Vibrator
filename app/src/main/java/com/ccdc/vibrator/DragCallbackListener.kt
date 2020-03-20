@@ -1,13 +1,10 @@
 package com.ccdc.vibrator
 
-import android.content.Context
-import android.media.MediaRouter
 import android.util.Log
-import androidx.core.view.DragStartHelper
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
-class DragCallbackListener(val myAdapter: MyAdapter, val dragStartListener : DragStartHelper.OnDragStartListener) : ItemTouchHelper.Callback() {
+class DragCallbackListener(private val myAdapter: MyAdapter) : ItemTouchHelper.Callback() {
 
 
     override fun getMovementFlags(
@@ -15,11 +12,12 @@ class DragCallbackListener(val myAdapter: MyAdapter, val dragStartListener : Dra
         viewHolder: RecyclerView.ViewHolder
     ): Int {
         val dragFlags = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-        return makeMovementFlags(dragFlags, 0)
+        val swipedown = ItemTouchHelper.DOWN
+        return makeMovementFlags(dragFlags, swipedown)
     }
 
     override fun isItemViewSwipeEnabled(): Boolean {
-        return false
+        return true
     }
 
     override fun isLongPressDragEnabled(): Boolean {
@@ -55,13 +53,16 @@ class DragCallbackListener(val myAdapter: MyAdapter, val dragStartListener : Dra
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
+        if(viewHolder is MyAdapter.MyViewHolder){
+            myAdapter.onSwiped(viewHolder)
+        }
     }
 
     interface Listener {
         fun onRowMoved(fromPosition: Int, toPosition: Int)
         fun onRowSelected(itemViewHolder: MyAdapter.MyViewHolder)
         fun onRowCleared(itemViewHolder: MyAdapter.MyViewHolder)
+        fun onSwiped(itemViewHolder: MyAdapter.MyViewHolder)
     }
 
 

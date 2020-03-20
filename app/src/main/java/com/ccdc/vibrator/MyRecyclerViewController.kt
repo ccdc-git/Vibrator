@@ -6,8 +6,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 
-class MyRecyclerViewController{
+class MyRecyclerViewController : OnStartDragListener{
 
+    lateinit var itemTouchHelper: ItemTouchHelper
     private var _recyclerView: RecyclerView
     val recyclerView : RecyclerView
         get() = _recyclerView
@@ -26,7 +27,7 @@ class MyRecyclerViewController{
     constructor(context : Context, recyclerView: RecyclerView, myDataset : MutableList<OneShot>) {
         this._Dataset = myDataset
         this.viewManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        this.viewAdapter = MyAdapter(this._Dataset)
+        this.viewAdapter = MyAdapter(this._Dataset,this)
 
         this._recyclerView = recyclerView.apply {
             // use this setting to improve performance if you know that changes
@@ -39,10 +40,11 @@ class MyRecyclerViewController{
             // specify an viewAdapter (see also next example)
             adapter = this@MyRecyclerViewController.viewAdapter
         }
-        ItemTouchHelper(
+        this.itemTouchHelper =  ItemTouchHelper(
             DragCallbackListener(
-                this.viewAdapter))
-            .attachToRecyclerView(_recyclerView)
+                this.viewAdapter
+            ))
+        this.itemTouchHelper.attachToRecyclerView(_recyclerView)
 
     }
     fun removeItemAt(index : Int ) : Boolean{
@@ -55,8 +57,9 @@ class MyRecyclerViewController{
         return this.viewAdapter.removeItemAll()
     }
 
-
-
+    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
+        this.itemTouchHelper.startDrag(viewHolder)
+    }
 
 
 }
