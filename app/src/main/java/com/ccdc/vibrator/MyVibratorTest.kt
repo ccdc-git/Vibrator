@@ -47,20 +47,20 @@ class MyVibratorTest(val vibrator: Vibrator, val mDataset : MutableList<OneShot>
         val duration = shot.duration
         val bps = 25
         return when (codeName) {
-            "red" -> VibrationEffect.createWaveform(
+            "piano" -> VibrationEffect.createWaveform(
                 LongArray(bps*2){ i -> if(i.rem(2) == 0) 0 else duration / bps },
                 IntArray(bps*2){ i -> if(i.rem(2) == 0) 0 else 50},
                 -1)
-            "blue" -> VibrationEffect.createWaveform(
+            "forte" -> VibrationEffect.createWaveform(
                 LongArray(bps*2){ i -> if(i.rem(2) == 0) 0 else duration / bps },
                 IntArray(bps*2){ i -> if(i.rem(2) == 0) 0 else 255},
                 -1)
-            "green" -> VibrationEffect.createWaveform(
+            "crescendo" -> VibrationEffect.createWaveform(
                 LongArray(bps*2){ i -> if(i.rem(2) == 0) 0 else duration / bps },
                 IntArray(bps*2){ i -> if(i.rem(2) == 0) 0 else (i+1)*255/bps/2},
                 -1
             )
-            "black" -> VibrationEffect.createWaveform(
+            "decrescendo" -> VibrationEffect.createWaveform(
                 LongArray(bps*2){ i -> if(i.rem(2) == 0) 0 else duration / bps },
                 IntArray(bps*2){ i -> if(i.rem(2) == 0) 0 else (50-i-1)*255/bps/2},
                 -1

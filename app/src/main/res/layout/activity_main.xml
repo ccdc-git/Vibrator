@@ -6,6 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PIANO FORTE CRESCENDO DECRESCENDO"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/EditText_for_test"
@@ -15,20 +23,57 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.494" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/my_recycler_view"
         android:background="@drawable/border_background"
         android:layout_width="match_parent"
-        android:layout_height="105dp"
-        android:layout_marginBottom="64dp"
+        android:layout_height="108dp"
+        android:layout_marginBottom="80dp"
         android:scrollbars="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/EditText_for_test"
+        app:layout_constraintTop_toBottomOf="@+id/textView">
+
+        <Button
+            android:id="@+id/Button_piano"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_margin="4dp"
+            android:text="piano" />
+
+        <Button
+            android:id="@+id/Button_forte"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_margin="4dp"
+            android:text="forte" />
+
+        <Button
+            android:id="@+id/Button_crescendo"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_margin="4dp"
+            android:text="crescendo"/>
+
+        <Button
+            android:id="@+id/Button_decrescendo"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_margin="4dp"
+            android:text="decrescendo" />
+
+    </LinearLayout>
     <Button
         android:id="@+id/Button_for_test"
         android:layout_width="wrap_content"
@@ -40,13 +85,25 @@
         app:layout_constraintTop_toBottomOf="@+id/EditText_for_test" />
 
     <Switch
-        android:id="@+id/Switch_for_test"
+        android:id="@+id/Switch_staccato"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="staccato"
-        app:layout_constraintBottom_toTopOf="@+id/EditText_for_test"
+        app:layout_constraintBottom_toTopOf="@+id/Button_for_test"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/EditText_for_test" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/ic_media_play" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

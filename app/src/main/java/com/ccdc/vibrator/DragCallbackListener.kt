@@ -29,9 +29,6 @@ class DragCallbackListener(private val myAdapter: MyAdapter) : ItemTouchHelper.C
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        val a = viewHolder.adapterPosition
-        val b = target.adapterPosition
-        Log.i("dragged","$a to $b")
         myAdapter.onRowMoved(viewHolder.adapterPosition,target.adapterPosition)
         return true
     }
@@ -57,6 +54,7 @@ class DragCallbackListener(private val myAdapter: MyAdapter) : ItemTouchHelper.C
             myAdapter.onSwiped(viewHolder)
         }
     }
+
 
     interface Listener {
         fun onRowMoved(fromPosition: Int, toPosition: Int)

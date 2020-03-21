@@ -14,20 +14,15 @@ class MyRecyclerViewController : OnStartDragListener{
         get() = _recyclerView
     private var viewAdapter: MyAdapter
     private var viewManager: RecyclerView.LayoutManager
-    private var _Dataset: MutableList<OneShot>
-    var Dataset : MutableList<OneShot>
-        get() = _Dataset
-        set(value) {
-            _Dataset = value
-        }
+    var Dataset: MutableList<OneShot>
     val size : Int
-        get()=_Dataset.size
+        get()=Dataset.size
 
 
     constructor(context : Context, recyclerView: RecyclerView, myDataset : MutableList<OneShot>) {
-        this._Dataset = myDataset
+        this.Dataset = myDataset
         this.viewManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        this.viewAdapter = MyAdapter(this._Dataset,this)
+        this.viewAdapter = MyAdapter(this.Dataset,this)
 
         this._recyclerView = recyclerView.apply {
             // use this setting to improve performance if you know that changes

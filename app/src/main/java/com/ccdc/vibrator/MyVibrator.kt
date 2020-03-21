@@ -4,24 +4,38 @@ import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.widget.Toast
 
 class MyVibrator(val vibrator: Vibrator, val mDataset : MutableList<OneShot>) {
-    lateinit var durationArrayAll : LongArray
-    lateinit var amplitudeArrayAll : IntArray
+    lateinit var durationArrayAll : MutableList<Long>
+    lateinit var amplitudeArrayAll : MutableList<Int>
     val bps = 50
     fun vibrate(){
         if(mDataset.isEmpty()){
             return
         }
+        durationArrayAll = mutableListOf()
+        amplitudeArrayAll = mutableListOf()
         //dataset에 맞춰서 setVibrationEffect List _완
-        durationArrayAll = LongArray(0) {0}
-        amplitudeArrayAll = IntArray(0) {0}
         for (shot in mDataset){
-            durationArrayAll = durationArrayAll.plus(makeDurationArray(shot))
-            amplitudeArrayAll = amplitudeArrayAll.plus(makeAmplitudeArray(shot))
+            durationArrayAll.addAll(makeDurationArray(shot))
+            amplitudeArrayAll.addAll(makeAmplitudeArray(shot))
         }
-        vibrator.vibrate(VibrationEffect.createWaveform(durationArrayAll,amplitudeArrayAll,-1))
+
+        if(amplitudeArrayAll.size == 0){
+            Log.d("size", "something wrong")
+            return
+        }
+        Log.v("durationArrayAll",durationArrayAll.toString())
+        Log.v("amplitudeArrayAll",amplitudeArrayAll.toString())
+        if(!smoothing()){
+            Log.d("smoothing", "something wrong")
+            return
+        }
+        Log.v("durationArrayAll",durationArrayAll.toString())
+        Log.v("amplitudeArrayAll",amplitudeArrayAll.toString())
+        vibrator.vibrate(VibrationEffect.createWaveform(durationArrayAll.toLongArray(),amplitudeArrayAll.toIntArray(),-1))
 
     }
 
@@ -49,33 +63,52 @@ class MyVibrator(val vibrator: Vibrator, val mDataset : MutableList<OneShot>) {
         ''sc'' -> staccato  ex) scPIANO -> soft staccato
         1 Shot divided for 25
      */
-    private fun makeDurationArray(shot: OneShot): LongArray {
-        return when (shot.codeName) {
-            "red", "blue" -> if(shot.isStaccato) LongArray(this.bps*2){ i -> if(i.rem(2) == 1) 0 else shot.duration / this.bps } else longArrayOf(shot.duration,0)
-            "green", "black" -> LongArray(this.bps*2){ i -> if(i.rem(2) == 1) 0 else shot.duration / this.bps }
-            else -> LongArray(0){0}
-        }
+    private fun makeDurationArray(shot: OneShot): List<Long> {
+        return List<Long>(bps) {(shot.duration / bps).toLong()}
     }
-    private fun makeAmplitudeArray(shot: OneShot): IntArray{
+    private fun makeAmplitudeArray(shot: OneShot): List<Int>{
         return if(shot.isStaccato){
             when (shot.codeName) {
-                "red" -> IntArray(bps * 2) { i -> if (i.rem(4) == 0) 50  else 0 }
-                "blue" -> IntArray(bps * 2) { i -> if (i.rem(4) == 0) 255  else 0 }
-                "green" -> IntArray(bps * 2) { i -> if (i.rem(4) == 0) (i) * 255 / bps / 2  else 0 }
-                "black" -> IntArray(bps * 2) { i -> if (i.rem(4) == 0) (bps * 2 - i) * 255 / bps / 2  else 0 }
-                else -> IntArray(0) { 0 }
+                "piano" -> List<Int>(bps) { i -> if (i.rem(2) == 0) 30  else 0 }
+                "forte" -> List<Int>(bps) { i -> if (i.rem(2) == 0) 255  else 0 }
+                "crescendo" -> List<Int>(bps) { i -> if (i.rem(2) == 0) (i+1) * 255 / (bps+1)   else 0 }
+                "decrescendo" -> List<Int>(bps) { i -> if (i.rem(2) == 0) (bps  - i) * 255 / bps  else 0 }
+                else -> List<Int>(0) { 0 }
 
             }
         }
         else {
              when (shot.codeName) {
-                "red" -> intArrayOf(50, 0)
-                "blue" -> intArrayOf(255, 0)
-                "green" -> IntArray(bps * 2) { i -> if (i.rem(2) == 1) 0 else (i) * 255 / bps / 2 }
-                "black" -> IntArray(bps * 2) { i -> if (i.rem(2) == 1) 0 else (bps * 2 - i) * 255 / bps / 2 }
-                else -> IntArray(0) { 0 }
+                "piano" -> List<Int>(bps){30}
+                "forte" -> List<Int>(bps){255}
+                "crescendo" -> List<Int>(bps) { i -> (i+1) * 255 / (bps+1)  }
+                "decrescendo" -> List<Int>(bps) { i ->(bps  - i) * 255 / bps }
+                else -> List<Int>(0) { 0 }
             }
         }
+    }
+
+    private fun smoothing(): Boolean {
+        if (durationArrayAll.size != amplitudeArrayAll.size || durationArrayAll.size < 2){
+            return false
+        }
+        var i = 1
+        while(i < amplitudeArrayAll.size){
+            if(amplitudeArrayAll[i] != amplitudeArrayAll[i-1]) {
+                if(amplitudeArrayAll[i] != 0 && amplitudeArrayAll[i-1]!=0){
+                    amplitudeArrayAll.add(i, 0)
+                    durationArrayAll.add(i, 0)
+                    i += 1
+                }
+            }else{
+                amplitudeArrayAll.removeAt(i)
+                durationArrayAll[i-1] = durationArrayAll[i] + durationArrayAll[i-1]
+                durationArrayAll.removeAt(i)
+                i -= 1
+            }
+            i += 1
+        }
+        return true
     }
 
 }

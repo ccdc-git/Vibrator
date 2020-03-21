@@ -1,11 +1,16 @@
 package com.ccdc.vibrator
 
+import android.content.Context
 import android.graphics.Color
 import android.util.Log
+import android.util.TypedValue
 import android.view.*
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.ccdc.vibrator.R.mipmap.crescendo_normal
 import kotlinx.android.synthetic.main.recycle_items.view.*
 import java.util.*
 
@@ -34,16 +39,23 @@ class MyAdapter(private var myDataset: MutableList<OneShot>,private val startDra
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-
-        holder.recyclerItem.setOnTouchListener { _, event ->
-            if(event.action == MotionEvent.ACTION_DOWN){
-                this.startDragListener.onStartDrag(holder)
-            }
-            return@setOnTouchListener true
+        holder.recyclerItem.setOnLongClickListener{
+            Log.i("click","LongClicked")
+            this.startDragListener.onStartDrag(holder)
+            return@setOnLongClickListener true
         }
+        val context : Context = holder.recyclerItem.context
+        val shot = myDataset[position]
+        val resName = when(shot.isStaccato) {
+            true ->   "${shot.codeName}_staccato"
+            else -> "${shot.codeName}_normal"
+        }
+        (holder.recyclerItem.RecyclerView_TextView_title as TextView).text = ""
+        Log.v("resName",resName)
+        Log.v("d",context.resources.getIdentifier(resName,"mipmap",context.packageName).toString())
+        (holder.recyclerItem.RecyclerView_ImageView_image as ImageView).setImageResource(
+            context.resources.getIdentifier(resName,"mipmap",context.packageName))
 
-        (holder.recyclerItem.RecyclerView_TextView_title as TextView).text = myDataset[position].codeName
-        (holder.recyclerItem.RecyclerView_ImageView_image as ImageView).setBackgroundColor(Color.parseColor(myDataset[position].codeName))
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -80,29 +92,44 @@ class MyAdapter(private var myDataset: MutableList<OneShot>,private val startDra
     }
 
     override fun onRowMoved(fromPosition: Int, toPosition: Int) {
-        Log.i("Moved","from $fromPosition to $toPosition")
+//        Log.i("Moved","from $fromPosition to $toPosition")
         if(fromPosition < toPosition){
             for(i in fromPosition until toPosition){
                 Collections.swap(myDataset,i,i+1)
+                Log.i("Swapped"," $i and ${1+i}")
             }
         }else{
-            for(i in fromPosition until toPosition){
+            for(i in fromPosition downTo toPosition+1){
                 Collections.swap(myDataset,i,i-1)
+                Log.i("Swapped"," $i and ${i-1}")
             }
         }
         notifyItemMoved(fromPosition,toPosition )
     }
 
     override fun onRowSelected(viewHolder: MyAdapter.MyViewHolder) {
+        val context = viewHolder.recyclerItem.context
+        val params =  viewHolder.recyclerItem.RecyclerView_ImageView_image.layoutParams
+        params.height = toDP(80F,context)
+        params.width = toDP(80F,context)
+        viewHolder.recyclerItem.RecyclerView_TextView_title.text = "이동"
+        viewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = context.getDrawable(R.drawable.selected_item)
         Log.i("selected",viewHolder.adapterPosition.toString())
     }
 
     override fun onRowCleared(viewHolder: MyAdapter.MyViewHolder) {
+        val context = viewHolder.recyclerItem.context
+        val params =  viewHolder.recyclerItem.RecyclerView_ImageView_image.layoutParams
+        params.height = toDP(96F,context)
+        params.width = toDP(96F,context)
+        viewHolder.recyclerItem.RecyclerView_TextView_title.text = ""
+        viewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = null
         Log.i("Cleared",viewHolder.adapterPosition.toString())
     }
 
     override fun onSwiped(itemViewHolder: MyViewHolder) {
         removeItemAt(itemViewHolder.adapterPosition)
     }
+    fun toDP(size : Float, context : Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size,context.resources.displayMetrics).toInt()
 
 }
