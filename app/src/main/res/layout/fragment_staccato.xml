@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="fragments.FragmentStaccato">
+
+    <LinearLayout
+        android:id="@+id/linearLayout_staccato"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp">
+
+        <Button
+            android:id="@+id/Button_piano_staccato"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_margin="4dp"
+            android:text="piano" />
+
+        <Button
+            android:id="@+id/Button_forte_staccato"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_margin="4dp"
+            android:text="forte" />
+
+        <Button
+            android:id="@+id/Button_crescendo_staccato"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_margin="4dp"
+            android:text="crescendo" />
+
+        <Button
+            android:id="@+id/Button_decrescendo_staccato"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_margin="4dp"
+            android:text="decrescendo" />
+
+    </LinearLayout>
+
+
+</FrameLayout>

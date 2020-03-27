@@ -7,14 +7,22 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import android.widget.CompoundButton
 import android.widget.Toast
+import fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
 
+
 class MainActivity : AppCompatActivity() {
-    private lateinit var myRVC : MyRecyclerViewController
+    lateinit var myRVC : MyRecyclerViewController
+
+    private val fragmentManager = supportFragmentManager
+
+    private val fragmentNormal = FragmentNormal()
+    private val fragmentStaccato = FragmentStaccato()
+    private val fragmentCustom = FragmentCustom()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +32,27 @@ class MainActivity : AppCompatActivity() {
         val vib = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         val myVibrator  = MyVibrator(vib,myDataset)
 
-
         //my_recycler_view
         myRVC = MyRecyclerViewController(this,findViewById(R.id.my_recycler_view),myDataset)
+
+
+    //BottomNavigationView
+        //첫화면 지정
+        val transaction = fragmentManager.beginTransaction()
+        transaction.replace(R.id.frame_layout,fragmentNormal).commitAllowingStateLoss()
+
+        //BottomNavigationView 설정
+        bottomNavigationView.setOnNavigationItemSelectedListener { item: MenuItem ->
+            val transaction = fragmentManager.beginTransaction()
+            when(item.itemId){
+                R.id.menu_normal -> transaction.replace(R.id.frame_layout,fragmentNormal).commitAllowingStateLoss()
+                R.id.menu_staccato -> transaction.replace(R.id.frame_layout,fragmentStaccato).commitAllowingStateLoss()
+                R.id.menu_custom -> transaction.replace(R.id.frame_layout,fragmentCustom).commitAllowingStateLoss()
+                else-> return@setOnNavigationItemSelectedListener true
+            }
+            return@setOnNavigationItemSelectedListener true
+        }
+
 
         //EditText_for_test
 
@@ -51,17 +77,6 @@ class MainActivity : AppCompatActivity() {
                 "cancel" -> {
                     myVibrator.cancel()
                 }
-                "piano", "forte", "crescendo", "decrescendo" ->{
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vib.vibrate(VibrationEffect.createOneShot(200,VibrationEffect.DEFAULT_AMPLITUDE))
-                    }else{
-                        vib.vibrate(longArrayOf(0, 200), -1)
-                    }
-                    if (!myRVC.addItemAt(myRVC.size, OneShot(inpText,1000, Switch_staccato.isChecked))) {
-                        Toast.makeText(this, "index 없음", Toast.LENGTH_LONG).show()
-                    }
-
-                }
                 "text" -> Log.i("dd",myRVC.Dataset.toString())
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -78,30 +93,20 @@ class MainActivity : AppCompatActivity() {
         //Button_for_test _ end
 
         //Buttons
-        setButton(Button_piano)
-        setButton(Button_forte)
-        setButton(Button_crescendo)
-        setButton(Button_decrescendo)
 
-        //Switch_staccato
-        Switch_staccato.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
-            Button_piano.setBackgroundResource(getShotId(this, OneShot(Button_piano.text.toString(),0,b)))
-            Button_forte.setBackgroundResource(getShotId(this, OneShot(Button_forte.text.toString(),0,b)))
-            Button_crescendo.setBackgroundResource(getShotId(this, OneShot(Button_crescendo.text.toString(),0,b)))
-            Button_decrescendo.setBackgroundResource(getShotId(this, OneShot(Button_decrescendo.text.toString(),0,b)))
-        }
-        //playbutton
+
+        //playButton
         floatingActionButton_play.setOnClickListener { _->
             myVibrator.vibrate()
         }
 
     }
 
-    private fun setButton(button: Button){
+    fun setButton(button: Button,staccato : Boolean){
         val codeName : String = button.text.toString()
-        button.setBackgroundResource(getShotId(this, OneShot(codeName,0,Switch_staccato.isChecked)))
+        button.setBackgroundResource(getShotId(this, OneShot(codeName,0,staccato)))
         button.setOnClickListener { _: View? ->
-            myRVC.addItemAt(myRVC.size, OneShot(codeName,1000, Switch_staccato.isChecked))
+            myRVC.addItemAt(myRVC.size, OneShot(codeName,1000, staccato))
         }
     }
     private fun getShotId(context: Context, shot: OneShot): Int {

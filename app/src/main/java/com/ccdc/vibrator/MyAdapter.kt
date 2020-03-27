@@ -112,7 +112,7 @@ class MyAdapter(private var myDataset: MutableList<OneShot>,private val startDra
         val params =  viewHolder.recyclerItem.RecyclerView_ImageView_image.layoutParams
         params.height = toDP(80F,context)
         params.width = toDP(80F,context)
-        viewHolder.recyclerItem.RecyclerView_TextView_title.text = "이동"
+//        viewHolder.recyclerItem.RecyclerView_TextView_title.text = "이동"
         viewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = context.getDrawable(R.drawable.selected_item)
         Log.i("selected",viewHolder.adapterPosition.toString())
     }
@@ -122,7 +122,7 @@ class MyAdapter(private var myDataset: MutableList<OneShot>,private val startDra
         val params =  viewHolder.recyclerItem.RecyclerView_ImageView_image.layoutParams
         params.height = toDP(96F,context)
         params.width = toDP(96F,context)
-        viewHolder.recyclerItem.RecyclerView_TextView_title.text = ""
+//        viewHolder.recyclerItem.RecyclerView_TextView_title.text = ""
         viewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = null
         Log.i("Cleared",viewHolder.adapterPosition.toString())
     }

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class MyRecyclerViewController : OnStartDragListener{
 
-    lateinit var itemTouchHelper: ItemTouchHelper
+    var itemTouchHelper: ItemTouchHelper
     private var _recyclerView: RecyclerView
     val recyclerView : RecyclerView
         get() = _recyclerView
