@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="InputVibrationView">
+        <attr name="paintColor" format= "color">
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="VibeBlockView">
+        <attr name="paintBlockColor" format="color">
+
+        </attr>
+    </declare-styleable>
+</resources>

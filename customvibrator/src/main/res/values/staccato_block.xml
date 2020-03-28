@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="piano_staccato_ArrayOnOff">0,40,80,120,160,200,240,280,320,360,400,440,480,520,560,600,640,680,720,760,800,840,880,920,960,1000</string>
+    <string name="piano_staccato_PathPoints">0,50,1000,50</string>
+
+    <string name="forte_staccato_ArrayOnOff">0,40,80,120,160,200,240,280,320,360,400,440,480,520,560,600,640,680,720,760,800,840,880,920,960,1000</string>
+    <string name="forte_staccato_PathPoints">0,255,1000,255</string>
+
+    <string name="crescendo_staccato_ArrayOnOff">0,40,80,120,160,200,240,280,320,360,400,440,480,520,560,600,640,680,720,760,800,840,880,920,960,1000</string>
+    <string name="crescendo_staccato_PathPoints">1000,255</string>
+
+    <string name="decrescendo_staccato_ArrayOnOff">0,40,80,120,160,200,240,280,320,360,400,440,480,520,560,600,640,680,720,760,800,840,880,920,960,1000</string>
+    <string name="decrescendo_staccato_PathPoints">0,255</string>
+</resources>

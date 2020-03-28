@@ -18,28 +18,28 @@
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="piano" />
+            android:text="piano_staccato" />
 
         <Button
             android:id="@+id/Button_forte_staccato"
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="forte" />
+            android:text="forte_staccato" />
 
         <Button
             android:id="@+id/Button_crescendo_staccato"
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="crescendo" />
+            android:text="crescendo_staccato" />
 
         <Button
             android:id="@+id/Button_decrescendo_staccato"
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="decrescendo" />
+            android:text="decrescendo_staccato" />
 
     </LinearLayout>
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="piano_normal_ArrayOnOff">0,1000</string>
+    <string name="piano_normal_PathPoints">0,50,1000,50</string>
+
+    <string name="forte_normal_ArrayOnOff">0,1000</string>
+    <string name="forte_normal_PathPoints">0,255,1000,255</string>
+
+    <string name="crescendo_normal_ArrayOnOff">0,1000</string>
+    <string name="crescendo_normal_PathPoints">1000,255</string>
+
+    <string name="decrescendo_normal_ArrayOnOff">0,1000</string>
+    <string name="decrescendo_normal_PathPoints">0,255</string>
+</resources>

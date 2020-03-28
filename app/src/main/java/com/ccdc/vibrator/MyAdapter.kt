@@ -1,20 +1,16 @@
 package com.ccdc.vibrator
 
 import android.content.Context
-import android.graphics.Color
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.ccdc.vibrator.R.mipmap.crescendo_normal
+import ccdc.lib.customvibrator.CustomVibration
 import kotlinx.android.synthetic.main.recycle_items.view.*
 import java.util.*
 
-class MyAdapter(private var myDataset: MutableList<OneShot>,private val startDragListener: OnStartDragListener) :
+class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val startDragListener: OnStartDragListener) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>(),
     DragCallbackListener.Listener{
 
@@ -26,7 +22,7 @@ class MyAdapter(private var myDataset: MutableList<OneShot>,private val startDra
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): MyAdapter.MyViewHolder {
+                                    viewType: Int): MyViewHolder {
         // create a new view
         val recyclerItem = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycle_items, parent, false) as View
@@ -45,16 +41,9 @@ class MyAdapter(private var myDataset: MutableList<OneShot>,private val startDra
             return@setOnLongClickListener true
         }
         val context : Context = holder.recyclerItem.context
-        val shot = myDataset[position]
-        val resName = when(shot.isStaccato) {
-            true ->   "${shot.codeName}_staccato"
-            else -> "${shot.codeName}_normal"
-        }
+        holder.recyclerItem.VibeBlockView_recyclerView.customVibration = myDataset[position]
         (holder.recyclerItem.RecyclerView_TextView_title as TextView).text = ""
-        Log.v("resName",resName)
-        Log.v("d",context.resources.getIdentifier(resName,"mipmap",context.packageName).toString())
-        (holder.recyclerItem.RecyclerView_ImageView_image as ImageView).setImageResource(
-            context.resources.getIdentifier(resName,"mipmap",context.packageName))
+        holder.recyclerItem.VibeBlockView_recyclerView.setBlock()
 
     }
 
@@ -70,7 +59,7 @@ class MyAdapter(private var myDataset: MutableList<OneShot>,private val startDra
             false
         }
     }
-    fun addItemAt(index : Int , v : OneShot) : Boolean{
+    fun addItemAt(index : Int , v : CustomVibration) : Boolean{
         return try {
             this.myDataset.add(index,v)
             this.notifyItemInserted(index)
@@ -107,29 +96,29 @@ class MyAdapter(private var myDataset: MutableList<OneShot>,private val startDra
         notifyItemMoved(fromPosition,toPosition )
     }
 
-    override fun onRowSelected(viewHolder: MyAdapter.MyViewHolder) {
-        val context = viewHolder.recyclerItem.context
-        val params =  viewHolder.recyclerItem.RecyclerView_ImageView_image.layoutParams
-        params.height = toDP(80F,context)
-        params.width = toDP(80F,context)
+    override fun onRowSelected(itemViewHolder: MyViewHolder) {
+        val context = itemViewHolder.recyclerItem.context
+        val params =  itemViewHolder.recyclerItem.VibeBlockView_recyclerView.layoutParams
+        params.height = dpToPx(80F,context)
+        params.width = dpToPx(80F,context)
 //        viewHolder.recyclerItem.RecyclerView_TextView_title.text = "이동"
-        viewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = context.getDrawable(R.drawable.selected_item)
-        Log.i("selected",viewHolder.adapterPosition.toString())
+        itemViewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = context.getDrawable(R.drawable.selected_item)
+        Log.i("selected",itemViewHolder.adapterPosition.toString())
     }
 
-    override fun onRowCleared(viewHolder: MyAdapter.MyViewHolder) {
-        val context = viewHolder.recyclerItem.context
-        val params =  viewHolder.recyclerItem.RecyclerView_ImageView_image.layoutParams
-        params.height = toDP(96F,context)
-        params.width = toDP(96F,context)
+    override fun onRowCleared(itemViewHolder: MyViewHolder) {
+        val context = itemViewHolder.recyclerItem.context
+        val params =  itemViewHolder.recyclerItem.VibeBlockView_recyclerView.layoutParams
+        params.height = dpToPx(96F,context)
+        params.width = dpToPx(96F,context)
 //        viewHolder.recyclerItem.RecyclerView_TextView_title.text = ""
-        viewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = null
-        Log.i("Cleared",viewHolder.adapterPosition.toString())
+        itemViewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = null
+        Log.i("Cleared",itemViewHolder.adapterPosition.toString())
     }
 
     override fun onSwiped(itemViewHolder: MyViewHolder) {
         removeItemAt(itemViewHolder.adapterPosition)
     }
-    fun toDP(size : Float, context : Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size,context.resources.displayMetrics).toInt()
+    private fun dpToPx(size : Float, context : Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size,context.resources.displayMetrics).toInt()
 
 }

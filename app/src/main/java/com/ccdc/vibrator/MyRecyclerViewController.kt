@@ -4,27 +4,26 @@ import android.content.Context
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ccdc.lib.customvibrator.CustomVibration
 
 
 class MyRecyclerViewController : OnStartDragListener{
 
-    var itemTouchHelper: ItemTouchHelper
-    private var _recyclerView: RecyclerView
-    val recyclerView : RecyclerView
-        get() = _recyclerView
+    private var itemTouchHelper: ItemTouchHelper
+    private var recyclerView: RecyclerView
     private var viewAdapter: MyAdapter
     private var viewManager: RecyclerView.LayoutManager
-    var Dataset: MutableList<OneShot>
+    var Dataset: MutableList<CustomVibration>
     val size : Int
         get()=Dataset.size
 
 
-    constructor(context : Context, recyclerView: RecyclerView, myDataset : MutableList<OneShot>) {
+    constructor(context : Context, recyclerView: RecyclerView, myDataset : MutableList<CustomVibration>) {
         this.Dataset = myDataset
         this.viewManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         this.viewAdapter = MyAdapter(this.Dataset,this)
 
-        this._recyclerView = recyclerView.apply {
+        this.recyclerView = recyclerView.apply {
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
             setHasFixedSize(true)
@@ -39,13 +38,13 @@ class MyRecyclerViewController : OnStartDragListener{
             DragCallbackListener(
                 this.viewAdapter
             ))
-        this.itemTouchHelper.attachToRecyclerView(_recyclerView)
+        this.itemTouchHelper.attachToRecyclerView(this.recyclerView)
 
     }
     fun removeItemAt(index : Int ) : Boolean{
         return this.viewAdapter.removeItemAt(index)
     }
-    fun addItemAt(index : Int , v : OneShot) : Boolean{
+    fun addItemAt(index : Int , v : CustomVibration) : Boolean{
         return this.viewAdapter.addItemAt(index,v)
     }
     fun removeItemAll() :Boolean{

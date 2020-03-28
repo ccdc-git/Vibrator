@@ -18,28 +18,28 @@
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="piano" />
+            android:text="piano_normal" />
 
         <Button
             android:id="@+id/Button_forte_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="forte" />
+            android:text="forte_normal" />
 
         <Button
             android:id="@+id/Button_crescendo_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="crescendo" />
+            android:text="crescendo_normal" />
 
         <Button
             android:id="@+id/Button_decrescendo_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="decrescendo" />
+            android:text="decrescendo_normal" />
 
     </LinearLayout>
 

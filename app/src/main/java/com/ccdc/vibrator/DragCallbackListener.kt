@@ -1,6 +1,5 @@
 package com.ccdc.vibrator
 
-import android.util.Log
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
@@ -12,8 +11,8 @@ class DragCallbackListener(private val myAdapter: MyAdapter) : ItemTouchHelper.C
         viewHolder: RecyclerView.ViewHolder
     ): Int {
         val dragFlags = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-        val swipedown = ItemTouchHelper.DOWN
-        return makeMovementFlags(dragFlags, swipedown)
+        val swipeDown = ItemTouchHelper.DOWN
+        return makeMovementFlags(dragFlags, swipeDown)
     }
 
     override fun isItemViewSwipeEnabled(): Boolean {
