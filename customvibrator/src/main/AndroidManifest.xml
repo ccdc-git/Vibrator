@@ -1,2 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ccdc.lib.customvibrator" />
+    package="ccdc.lib.customvibrator" >
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+</manifest>

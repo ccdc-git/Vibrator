@@ -22,8 +22,8 @@ data class AmpPoint(
     var x : Int,
     var y : Int)
 
-class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var originDuration : Int){
-    private lateinit var originPathPoints: MutableList<AmpPoint>
+class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var originDuration : Int, var codeName: String){
+    private var originPathPoints: MutableList<AmpPoint>
     var blockColor = Color.BLACK
     var bgColor = Color.WHITE
     lateinit var arrayOnOff : MutableList<OnOffVibration>
@@ -34,19 +34,20 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
         private set
     var duration : Int = 0 //0으로 하면 init에서
         private set
-    val mspv = 10 //milli second per vibration
+    val mspv = 25 //milli second per vibration
     init { //기본생성자 originArrayOnOff ,  originDuration
         originPathPoints = mutableListOf(AmpPoint(0,255), AmpPoint(originDuration,255))
         changeDuration(originDuration)
     }
 
-    constructor(arrayOnOff: ArrayList<OnOffVibration>, duration: Int, pathPoints: MutableList<AmpPoint>) : this(arrayOnOff,0){
+    constructor(arrayOnOff: ArrayList<OnOffVibration>, duration: Int, pathPoints: MutableList<AmpPoint>, codeName : String) : this(arrayOnOff,0,codeName){
         this.originPathPoints = pathPoints
         this.originDuration = duration
+        this.codeName = codeName
         changeDuration(originDuration)
     }
     @Throws(ImportWrongFileException::class)
-    constructor(fileInputStream: FileInputStream) : this(mutableListOf(),0) {
+    constructor(fileInputStream: FileInputStream, fileName: String) : this(mutableListOf(),0, fileName) {
         val reader = fileInputStream.reader()
         val importBytes =  reader.readLines()
         /*
@@ -65,7 +66,7 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
             throw ImportWrongFileException("wrong Durations, they are not number")
         }
     }
-    constructor(context: Context,codeName : String) : this(mutableListOf(),0){
+    constructor(context: Context,codeName : String) : this(mutableListOf(),0,codeName){
         //codeName = (세기)_(스타카토여부) ex)forte_staccato
         val arrayOnOffStrings = context.getString(context.resources.getIdentifier("${codeName}_ArrayOnOff","string",context.packageName)).split(',')
         val pathPointsStrings = context.getString(context.resources.getIdentifier("${codeName}_PathPoints","string",context.packageName)).split(',')
@@ -159,13 +160,13 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getVibrationEffect() : VibrationEffect{
-        //10ms씩 자르기
+        //mspv (ms per vibe) 만큼 자르기
 
         val timings = MutableList(duration/mspv){ mspv.toLong() }
         val amplitudes = MutableList(duration/mspv){0}
         for (onOff in arrayOnOff){
-            for(i in onOff.stTime/10 until onOff.fnTime/10){
-                amplitudes[i.toInt()] = findAmp((i*10).toInt())
+            for(i in onOff.stTime/mspv until onOff.fnTime/mspv){
+                amplitudes[i.toInt()] = findAmp((i*mspv).toInt())
             }
         }
         /*Log.v("timings",timings.toString())
@@ -178,8 +179,8 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
     fun getAmplitudesArray() : MutableList<Int>{
         val amplitudes = MutableList(duration/mspv){0}
         for (onOff in arrayOnOff){
-            for(i in onOff.stTime/10 until onOff.fnTime/10){
-                amplitudes[i.toInt()] = findAmp((i*10).toInt())
+            for(i in onOff.stTime/mspv until onOff.fnTime/mspv){
+                amplitudes[i.toInt()] = findAmp((i*mspv).toInt())
             }
         }
         return amplitudes
@@ -244,14 +245,14 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
     private fun findAmp(time : Int) : Int{
         if(pathPoints.size == 0) return 0
         if (time < pathPoints[0].x){ //맨 처음 point 보다 앞에 있을 때
-            return xyTime(0,255,pathPoints[0].x,pathPoints[0].y,time)
+            return xyTime(0,0,pathPoints[0].x,pathPoints[0].y,time)
         }
         for (i in 0 until pathPoints.size-1){
             if(pathPoints[i].x <= time && time < pathPoints[i+1].x){
                 return xyTime(pathPoints[i].x,pathPoints[i].y,pathPoints[i+1].x,pathPoints[i+1].y,time)
             }
         }
-        return xyTime(pathPoints.last().x,pathPoints.last().y,duration,255,time)
+        return xyTime(pathPoints.last().x,pathPoints.last().y,duration,0,time)
     }
     private fun xyTime(x1 : Int, y1 : Int, x2 : Int, y2 : Int, time : Int) : Int = if(x1 == x2) y1 else (((y1 - y2) / (x1 - x2).toFloat()) * (time - x1) + y1).roundToInt()
 
