@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="fragments.FragmentCustom">
-
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/RecyclerView_fragment_custom_customViews"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="custom" />
+        android:scrollbars="vertical"/>
 
 </FrameLayout>

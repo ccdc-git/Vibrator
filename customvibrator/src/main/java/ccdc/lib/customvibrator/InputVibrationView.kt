@@ -59,15 +59,15 @@ constructor(context: Context, attr : AttributeSet? = null,defStyleAttr : Int = 0
 
     var customVibration : CustomVibration? = null
 
-    fun setBlock(){
+    fun setBlock(sizeDp : Float){
         val cV = customVibration
         if (cV != null){
                 val bitmap = cV.makeBitmap(cV.blockColor, cV.bgColor)
-                this.layoutParams.height = dpToPx(96F,context)
+                this.layoutParams.height = dpToPx(sizeDp,context)
                 this.setImageDrawable(BitmapDrawable(resources, bitmap))
                 this.layoutParams.width = (this.layoutParams.height * (cV.duration / 1000F)).toInt()
-            Log.v("weigh", this.width.toString())
-            Log.v("height", this.height.toString())
+            //Log.v("weigh", this.width.toString())
+            //Log.v("height", this.height.toString())
         }
     }
     private fun dpToPx(size : Float, context : Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size,context.resources.displayMetrics).toInt()

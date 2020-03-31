@@ -78,8 +78,8 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
             originPathPoints.add(AmpPoint(pathPointsStrings[i*2].toInt(),pathPointsStrings[i*2+1].toInt()))
         }
         originDuration = 1000
-        Log.v("originArrayOnOff",originArrayOnOff.toString())
-        Log.v("originPathPoints",originPathPoints.toString())
+        //Log.v("originArrayOnOff",originArrayOnOff.toString())
+        //Log.v("originPathPoints",originPathPoints.toString())
         changeDuration(originDuration)
         this.blockColor = when(codeName.split("_")[0]){
             "piano"-> Color.RED

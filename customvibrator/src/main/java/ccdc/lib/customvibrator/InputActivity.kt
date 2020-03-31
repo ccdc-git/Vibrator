@@ -60,7 +60,7 @@ class InputActivity : AppCompatActivity() {
                         startActivity(intentToTest)
                     }catch (e:FileNotFoundException){
                         Toast.makeText(applicationContext,"저장실패",Toast.LENGTH_LONG).show()
-                        Log.v("쓰기","파일이 없다")
+                        Log.d("쓰기","파일이 없다")
                     }
                 }
             }
@@ -128,7 +128,7 @@ class InputActivity : AppCompatActivity() {
 
         customVibration = CustomVibration(arrayOnOff,passedMillis10,EditText_input_main.text.toString())
         VibeBlockView_testing_main.customVibration = customVibration
-        VibeBlockView_testing_main.setBlock()
+        VibeBlockView_testing_main.setBlock(96F)
 
 
         button.text = "시작"

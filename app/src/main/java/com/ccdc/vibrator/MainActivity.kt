@@ -8,12 +8,16 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.widget.Button
 import android.widget.Toast
 import ccdc.lib.customvibrator.CustomVibration
 import fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_staccato.*
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.InputStream
 
 
 class MainActivity : AppCompatActivity() {
@@ -107,14 +111,26 @@ class MainActivity : AppCompatActivity() {
             myVibrator.vibrate()
         }
 
-    }
+        //touch
 
-    fun setButton(button: Button,staccato : Boolean){
+
+    }//fin onCreate
+
+
+    fun setButton(button: Button, staccato : Boolean){
         val codeName : String = button.text.toString()
         button.text = ""
         button.setBackgroundResource( resources.getIdentifier(codeName,"mipmap",packageName))
         button.setOnClickListener {
             myRVC.addItemAt(myRVC.size,CustomVibration(this, codeName))
+        }
+    }
+    fun addInMyRVC(codeName : String){
+        try {
+            val fIS: FileInputStream = openFileInput(codeName)
+            myRVC.addItemAt(myRVC.size, CustomVibration(fIS, codeName))
+        }catch (e: FileNotFoundException){
+            Log.v("반쯤",codeName)
         }
     }
 

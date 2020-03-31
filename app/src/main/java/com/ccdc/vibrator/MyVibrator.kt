@@ -26,14 +26,14 @@ class MyVibrator(val vibrator: Vibrator, val mDataset : MutableList<CustomVibrat
             Log.d("size", "something wrong")
             return
         }
-        Log.v("durationArrayAll",timingsArrayAll.toString())
-        Log.v("amplitudeArrayAll",amplitudeArrayAll.toString())
+        //Log.v("durationArrayAll",timingsArrayAll.toString())
+        //Log.v("amplitudeArrayAll",amplitudeArrayAll.toString())
         if(!smoothing()){
             Log.d("smoothing", "something wrong")
             return
         }
-        Log.v("durationArrayAll",timingsArrayAll.toString())
-        Log.v("amplitudeArrayAll",amplitudeArrayAll.toString())
+        //Log.v("durationArrayAll",timingsArrayAll.toString())
+       //Log.v("amplitudeArrayAll",amplitudeArrayAll.toString())
         vibrator.vibrate(VibrationEffect.createWaveform(timingsArrayAll.toLongArray(),amplitudeArrayAll.toIntArray(),-1))
 
     }

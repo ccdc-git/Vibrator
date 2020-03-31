@@ -1,33 +1,53 @@
 package fragments
 
+import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import ccdc.lib.customvibrator.CustomVibration
+import com.ccdc.vibrator.MainActivity
 import com.ccdc.vibrator.R
+import kotlinx.android.synthetic.main.fragment_custom.view.*
+import java.io.FileNotFoundException
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FragmentCustom.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FragmentCustom : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: CustomAdaptor
+    private lateinit var viewManager: RecyclerView.LayoutManager
+    val myDataSet : MutableList<CustomVibration> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
         }
+        //testing
+        myDataSet.clear()
+        val fileNames : List<String> = listOf("piano_normal","forte_normal","piano_normal","forte_staccato")
+        for (name in fileNames){
+            try {
+                //val fIO: FileInputStream = activity!!.openFileInput(name)
+                //myDataSet.add(CustomVibration(fIO,name))
+                val context1 = context
+                if(context1 != null) {
+                    myDataSet.add(CustomVibration(context1, name))
+                }
+            }catch (e : FileNotFoundException){
+                Log.d("Exception","no file")
+            }
+        }
+
+
+
     }
 
     override fun onCreateView(
@@ -35,25 +55,56 @@ class FragmentCustom : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_custom, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_custom, container, false)
+        val mainActivity : MainActivity = activity as MainActivity
+
+
+        this.recyclerView = rootView.RecyclerView_fragment_custom_customViews
+        this.viewManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        this.viewAdapter = CustomAdaptor(this.myDataSet,object : OnCustomInput(){
+            override fun itemClicked(codeName: String) {
+                mainActivity.addInMyRVC(codeName)
+            }
+        })
+
+        this.recyclerView = recyclerView.apply {
+            // use this setting to improve performance if you know that changes
+            // in content do not change the layout size of the RecyclerView
+            setHasFixedSize(true)
+
+            // use a linear layout manager
+            layoutManager = this@FragmentCustom.viewManager
+
+            // specify an viewAdapter (see also next example)
+            adapter = this@FragmentCustom.viewAdapter
+        }
+        val customCallback = CustomCallback(viewAdapter, object : CustomCallbackActions(){
+            override fun onRightClicked(position: Int) {
+                viewAdapter.removeItemAt(position)
+            }
+
+            override fun itemClicked(position: Int) {
+                //TODO 아이템을 작업장에 추가
+            }
+        })
+        val itemTouchHelper = ItemTouchHelper(customCallback)
+        itemTouchHelper.attachToRecyclerView(this.recyclerView)
+        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration(){
+            override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+                customCallback.onDraw(c)
+            }
+        })
+
+        return rootView
     }
 
+
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FragmentCustom.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(param1: String) =
             FragmentCustom().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
                 }
             }
     }

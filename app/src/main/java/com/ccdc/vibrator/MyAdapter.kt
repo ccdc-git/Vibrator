@@ -7,7 +7,7 @@ import android.view.*
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ccdc.lib.customvibrator.CustomVibration
-import kotlinx.android.synthetic.main.recycle_items.view.*
+import kotlinx.android.synthetic.main.main_recycle_items.view.*
 import java.util.*
 
 class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val startDragListener: OnStartDragListener) :
@@ -25,7 +25,7 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
                                     viewType: Int): MyViewHolder {
         // create a new view
         val recyclerItem = LayoutInflater.from(parent.context)
-            .inflate(R.layout.recycle_items, parent, false) as View
+            .inflate(R.layout.main_recycle_items, parent, false) as View
         // set the view's size, margins, paddings and layout parameters
 
         return MyViewHolder(recyclerItem)
@@ -36,14 +36,14 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.recyclerItem.setOnLongClickListener{
-            Log.i("click","LongClicked")
+            //Log.i("click","LongClicked")
             this.startDragListener.onStartDrag(holder)
             return@setOnLongClickListener true
         }
         val context : Context = holder.recyclerItem.context
         holder.recyclerItem.VibeBlockView_recyclerView.customVibration = myDataset[position]
         (holder.recyclerItem.RecyclerView_TextView_title as TextView).text = ""
-        holder.recyclerItem.VibeBlockView_recyclerView.setBlock()
+        holder.recyclerItem.VibeBlockView_recyclerView.setBlock(96F)
 
     }
 
@@ -85,12 +85,12 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
         if(fromPosition < toPosition){
             for(i in fromPosition until toPosition){
                 Collections.swap(myDataset,i,i+1)
-                Log.i("Swapped"," $i and ${1+i}")
+                //Log.i("Swapped"," $i and ${1+i}")
             }
         }else{
             for(i in fromPosition downTo toPosition+1){
                 Collections.swap(myDataset,i,i-1)
-                Log.i("Swapped"," $i and ${i-1}")
+                //Log.i("Swapped"," $i and ${i-1}")
             }
         }
         notifyItemMoved(fromPosition,toPosition )
@@ -103,7 +103,7 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
         params.width = dpToPx(80F,context)
 //        viewHolder.recyclerItem.RecyclerView_TextView_title.text = "이동"
         itemViewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = context.getDrawable(R.drawable.selected_item)
-        Log.i("selected",itemViewHolder.adapterPosition.toString())
+        //Log.i("selected",itemViewHolder.adapterPosition.toString())
     }
 
     override fun onRowCleared(itemViewHolder: MyViewHolder) {
@@ -113,7 +113,7 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
         params.width = dpToPx(96F,context)
 //        viewHolder.recyclerItem.RecyclerView_TextView_title.text = ""
         itemViewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = null
-        Log.i("Cleared",itemViewHolder.adapterPosition.toString())
+       // Log.i("Cleared",itemViewHolder.adapterPosition.toString())
     }
 
     override fun onSwiped(itemViewHolder: MyViewHolder) {

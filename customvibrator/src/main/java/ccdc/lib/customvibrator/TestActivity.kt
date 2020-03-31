@@ -19,7 +19,7 @@ class TestActivity : AppCompatActivity() {
 
         val fileName = intent.extras?.getString("fileName")
         if (fileName != null) {
-            Log.v("getFileName", fileName)
+            //Log.v("getFileName", fileName)
             val fIS = openFileInput(fileName)
             val cV = CustomVibration(fIS,fileName)
             VibeBlockView_testing_tester.customVibration = cV
@@ -35,7 +35,7 @@ class TestActivity : AppCompatActivity() {
                 try {
                     cV.bgColor = Color.parseColor(EditText_1.text.toString())
                 } catch (e: IllegalArgumentException) {
-                    Log.v("bgcolor",EditText_1.text.toString())
+                    Log.d("bgcolor",EditText_1.text.toString())
                     cV.bgColor = Color.WHITE
                     EditText_1.setText("white")
                 }
@@ -66,7 +66,7 @@ class TestActivity : AppCompatActivity() {
                 val vib =getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
                 vib.vibrate(VibrationEffect.createWaveform(cV.getTimingsArray().toLongArray(),cV.getAmplitudesArray().toIntArray(),-1))
 
-                VibeBlockView_testing_tester.setBlock()
+                VibeBlockView_testing_tester.setBlock(96F)
             }
 
         }
