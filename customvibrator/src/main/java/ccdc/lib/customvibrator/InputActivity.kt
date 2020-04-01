@@ -1,17 +1,18 @@
 package ccdc.lib.customvibrator
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.MotionEvent
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import kotlinx.android.synthetic.main.input_main.*
+import java.io.File
 import java.io.FileNotFoundException
+import java.net.FileNameMap
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
@@ -24,6 +25,7 @@ class InputActivity : AppCompatActivity() {
     private lateinit var myThread: CircleThread
     private lateinit var customVibration : CustomVibration
     private val MAX_DURATION : Int = 4000
+    private var fileName : String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,25 +48,52 @@ class InputActivity : AppCompatActivity() {
         }
 
         //test 화면으로 이동
-        button2.setOnClickListener {
-            if(!recording){
-                if(duration != 0) {
-                    //파일 저장
-                    val fileName =EditText_input_main.text.toString()
-                    try {
-                        val fOS = openFileOutput(fileName, Context.MODE_PRIVATE)
-                        customVibration.saveAsFile(fOS)
-                        val intentToTest = Intent(applicationContext, TestActivity::class.java)
-
-                        intentToTest.putExtra("fileName", fileName)
-                        startActivity(intentToTest)
-                    }catch (e:FileNotFoundException){
-                        Toast.makeText(applicationContext,"저장실패",Toast.LENGTH_LONG).show()
-                        Log.d("쓰기","파일이 없다")
-                    }
-                }
+        button_toTest.setOnClickListener {
+            if(saveCustomVibration()) {
+                val intentToTest = Intent(applicationContext, TestActivity::class.java)
+                intentToTest.putExtra("fileName", fileName)
+                startActivity(intentToTest)
             }
         }
+        button_toHome.setOnClickListener {
+            if(saveCustomVibration()){
+                intent.putExtra("newFileName",fileName)
+                setResult(Activity.RESULT_OK,intent)
+                finish()
+            }
+        }
+    }
+
+    private fun saveCustomVibration(): Boolean {
+        if(!recording && duration !=0){
+            val newFileName = EditText_fileName.text.toString()
+            if(newFileName == ""){
+                Toast.makeText(this,"파일이름을 입력하세요",Toast.LENGTH_LONG).show()
+                return false
+            }
+            if(fileName != newFileName){ //새로운 파일이름을 받으면 원래 있던걸 삭제하고 다시 입력
+                deleteFile(fileName)  //원래 파일이 있는지 없는지는 중요하지 않음
+                fileName = newFileName
+            }
+            if(isExist(fileName)){
+                Toast.makeText(this,"이미 있는 파일이름 입니다.",Toast.LENGTH_LONG).show()
+                fileName = ""
+                return false
+            }
+            return try {
+                val fOS = openFileOutput(fileName, Context.MODE_PRIVATE)
+                customVibration.saveAsFile(fOS)
+                true
+            }catch (e:FileNotFoundException){
+                Toast.makeText(applicationContext,"저장실패",Toast.LENGTH_LONG).show()
+                false
+            }
+        }
+        return false
+    }
+    private fun isExist(fileName : String) : Boolean{
+        val file = getFileStreamPath(fileName)
+        return file.exists()
     }
 
 
@@ -126,7 +155,7 @@ class InputActivity : AppCompatActivity() {
         }
         this.duration = passedMillis10
 
-        customVibration = CustomVibration(arrayOnOff,passedMillis10,EditText_input_main.text.toString())
+        customVibration = CustomVibration(arrayOnOff,passedMillis10,EditText_fileName.text.toString())
         VibeBlockView_testing_main.customVibration = customVibration
         VibeBlockView_testing_main.setBlock(96F)
 

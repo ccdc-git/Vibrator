@@ -44,8 +44,8 @@ class CustomCallback(private var customAdapter : CustomAdaptor) : ItemTouchHelpe
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
     ): Int {
-        val swipeLeft = ItemTouchHelper.LEFT
-        return makeMovementFlags(0,swipeLeft)
+        val swipeLeft = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        return makeMovementFlags(0, swipeLeft )
     }
 
     override fun onMove(

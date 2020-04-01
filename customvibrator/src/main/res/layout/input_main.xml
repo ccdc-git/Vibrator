@@ -58,7 +58,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/button_toTest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="test"
@@ -66,7 +66,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/EditText_input_main"
+        android:id="@+id/EditText_fileName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
@@ -78,12 +78,12 @@
         app:layout_constraintTop_toBottomOf="@+id/button" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/button_toHome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Button"
-        app:layout_constraintBottom_toBottomOf="@+id/EditText_input_main"
-        app:layout_constraintStart_toEndOf="@+id/EditText_input_main"
-        app:layout_constraintTop_toTopOf="@+id/EditText_input_main" />
+        app:layout_constraintBottom_toBottomOf="@+id/EditText_fileName"
+        app:layout_constraintStart_toEndOf="@+id/EditText_fileName"
+        app:layout_constraintTop_toTopOf="@+id/EditText_fileName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
