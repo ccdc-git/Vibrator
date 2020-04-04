@@ -99,9 +99,7 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
     override fun onRowSelected(itemViewHolder: MyViewHolder) {
         val context = itemViewHolder.recyclerItem.context
         val params =  itemViewHolder.recyclerItem.VibeBlockView_recyclerView.layoutParams
-        params.height = dpToPx(80F,context)
-        params.width = dpToPx(80F,context)
-//        viewHolder.recyclerItem.RecyclerView_TextView_title.text = "이동"
+        itemViewHolder.recyclerItem.VibeBlockView_recyclerView.setBlock(80F)
         itemViewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = context.getDrawable(R.drawable.selected_item)
         //Log.i("selected",itemViewHolder.adapterPosition.toString())
     }
@@ -109,9 +107,7 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
     override fun onRowCleared(itemViewHolder: MyViewHolder) {
         val context = itemViewHolder.recyclerItem.context
         val params =  itemViewHolder.recyclerItem.VibeBlockView_recyclerView.layoutParams
-        params.height = dpToPx(96F,context)
-        params.width = dpToPx(96F,context)
-//        viewHolder.recyclerItem.RecyclerView_TextView_title.text = ""
+        itemViewHolder.recyclerItem.VibeBlockView_recyclerView.setBlock(96F)
         itemViewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = null
        // Log.i("Cleared",itemViewHolder.adapterPosition.toString())
     }

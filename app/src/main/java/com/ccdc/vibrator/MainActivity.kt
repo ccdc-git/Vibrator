@@ -64,45 +64,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        //EditText_for_test
-
-        //Button_for_test
-        Button_for_test.setOnClickListener {
-            when (EditText_for_test.text.toString()) {
-                "remove" -> {
-                    if(!myRVC.removeItemAt(myRVC.size - 1)) {  //실패하면 메시지 띄우기
-                        val toast = Toast.makeText(this, "index 없음", Toast.LENGTH_LONG)
-                        toast.show()
-                    }
-                }
-                "remove all" -> {
-                    if(!myRVC.removeItemAll()) {  //실패하면 메시지 띄우기
-                        val toast = Toast.makeText(this, "index 없음", Toast.LENGTH_LONG)
-                        toast.show()
-                    }
-                }
-                "do" -> {
-                    myVibrator.vibrate()
-                }
-                "cancel" -> {
-                    myVibrator.cancel()
-                }
-                "text" -> Log.i("dd",myRVC.Dataset.toString())
-                else -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vib.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE))
-                    }else{
-                        @Suppress("DEPRECATION")
-                        vib.vibrate(longArrayOf(0, 500), -1)
-                    }
-                    Toast.makeText(this,"잘못입력",Toast.LENGTH_LONG).show()
-
-                }
-            }
-            EditText_for_test.setText("")
-        }
-        //Button_for_test _ end
-
         //Buttons
 
 

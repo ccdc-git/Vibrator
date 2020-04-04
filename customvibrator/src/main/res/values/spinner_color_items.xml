@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinner_color_items">
+        <item>Red</item>
+        <item>Lime</item>
+        <item>Yellow</item>
+        <item>Cyan</item>
+        <item>Magenta</item>
+        <item>Maroon</item>
+        <item>Olive</item>
+        <item>Green</item>
+        <item>Purple</item>
+        <item>Teal</item>
+    </string-array>
+</resources>

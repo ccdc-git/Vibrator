@@ -6,14 +6,17 @@
     tools:context="fragments.FragmentNormal">
 
     <LinearLayout
+        android:elevation="8dp"
         android:id="@+id/linearLayout_normal"
         android:layout_width="match_parent"
         android:layout_height="96dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingHorizontal="8dp">
+        android:paddingHorizontal="8dp"
+        android:paddingTop="16dp">
 
         <Button
+            android:elevation="16dp"
             android:id="@+id/Button_piano_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"
@@ -21,6 +24,7 @@
             android:text="piano_normal" />
 
         <Button
+            android:elevation="16dp"
             android:id="@+id/Button_forte_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"
@@ -28,6 +32,7 @@
             android:text="forte_normal" />
 
         <Button
+            android:elevation="16dp"
             android:id="@+id/Button_crescendo_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"
@@ -35,6 +40,7 @@
             android:text="crescendo_normal" />
 
         <Button
+            android:elevation="16dp"
             android:id="@+id/Button_decrescendo_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"

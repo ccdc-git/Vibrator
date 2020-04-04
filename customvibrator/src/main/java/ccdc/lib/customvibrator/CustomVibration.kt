@@ -2,30 +2,37 @@ package ccdc.lib.customvibrator
 
 import android.content.Context
 import android.graphics.*
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.VibrationEffect
 import android.util.Log
 import androidx.annotation.RequiresApi
-import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.lang.Exception
 import kotlin.math.roundToInt
 
 data class OnOffVibration (
-    var is_On : Boolean,
     var stTime : Long,
-    var fnTime : Long)
+    var fnTime : Long){
+    override fun toString(): String {
+        return "$stTime,$fnTime"
+    }
+}
 
 data class AmpPoint(
-    var x : Int,
-    var y : Int)
+    var timing : Int,
+    var amp : Int){
+    override fun toString(): String {
+        return "$timing,$amp"
+    }
+}
 
-class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var originDuration : Int, var codeName: String){
-    private var originPathPoints: MutableList<AmpPoint>
-    var blockColor = Color.BLACK
-    var bgColor = Color.WHITE
+class CustomVibration{
+    private lateinit var originArrayOnOff : MutableList<OnOffVibration>
+    private lateinit var originPathPoints: MutableList<AmpPoint>
+    private var originDuration : Int = 0
+    lateinit var codeName: String
+
     lateinit var arrayOnOff : MutableList<OnOffVibration>
         private set
     lateinit var pathPoints : MutableList<AmpPoint>
@@ -34,45 +41,71 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
         private set
     var duration : Int = 0 //0으로 하면 init에서
         private set
+
     val mspv = 25 //milli second per vibration
-    init { //기본생성자 originArrayOnOff ,  originDuration
-        originPathPoints = mutableListOf(AmpPoint(0,255), AmpPoint(originDuration,255))
-        changeDuration(originDuration)
+    var blockColor = Color.BLACK
+    var bgColor = Color.WHITE
+
+    //empty CustomVibration
+    constructor(){
+        this.originArrayOnOff = mutableListOf()
+        this.originPathPoints = mutableListOf()
+        this.arrayOnOff = mutableListOf()
+        this.pathPoints = mutableListOf()
+        this.duration = 1000
+        codeName = ""
     }
 
-    constructor(arrayOnOff: ArrayList<OnOffVibration>, duration: Int, pathPoints: MutableList<AmpPoint>, codeName : String) : this(arrayOnOff,0,codeName){
+    //argument all elements
+    constructor(arrayOnOff: ArrayList<OnOffVibration>, duration: Int, pathPoints: MutableList<AmpPoint>, codeName : String) {
+        this.originArrayOnOff = arrayOnOff
         this.originPathPoints = pathPoints
         this.originDuration = duration
         this.codeName = codeName
         changeDuration(originDuration)
     }
+    //default pathPoints
+    constructor(arrayOnOff: ArrayList<OnOffVibration>, duration: Int, codeName : String) {
+        this.originArrayOnOff = arrayOnOff
+        this.originPathPoints = mutableListOf(AmpPoint(0,255),AmpPoint(duration,255))
+        this.originDuration = duration
+        this.codeName = codeName
+        changeDuration(originDuration)
+    }
+
+    //import from file
     @Throws(ImportWrongFileException::class)
-    constructor(fileInputStream: FileInputStream, fileName: String) : this(mutableListOf(),0, fileName) {
-        val reader = fileInputStream.reader()
-        val importBytes =  reader.readLines()
+    constructor(fileInputStream: FileInputStream, fileName: String) {
+        val importBytes =  fileInputStream.reader().readLines()
         /*
-            1번째 줄 : originArrayOnOff
-            2번째 줄 : originPathPoints
-            3번째 줄 : originDuration
-            4번째 줄 : duration
+            1st line : originArrayOnOff
+            2nd line : originPathPoints
+            3rd line : originDuration
+            4th line : duration
+            5th line : blockColor
          */
-        if(importBytes.size != 4) throw ImportWrongFileException("file has ${importBytes.size} lines")
+        if(importBytes.size != 5) throw ImportWrongFileException("file has ${importBytes.size} lines")
         try{
             this.originArrayOnOff = stringToOnOffArray(importBytes[0])
             this.originPathPoints =stringToPathPoints(importBytes[1])
             this.originDuration = importBytes[2].toInt()
             changeDuration(importBytes[3].toInt())
+            this.blockColor = importBytes[4].toInt()
         }catch (e: NumberFormatException){
             throw ImportWrongFileException("wrong Durations, they are not number")
         }
+        this.codeName = fileName
     }
-    constructor(context: Context,codeName : String) : this(mutableListOf(),0,codeName){
+
+    //basic blocks
+    constructor(context: Context,codeName : String) {
         //codeName = (세기)_(스타카토여부) ex)forte_staccato
         val arrayOnOffStrings = context.getString(context.resources.getIdentifier("${codeName}_ArrayOnOff","string",context.packageName)).split(',')
         val pathPointsStrings = context.getString(context.resources.getIdentifier("${codeName}_PathPoints","string",context.packageName)).split(',')
-        originPathPoints.clear()
+        this.originArrayOnOff = mutableListOf()
+        this.originPathPoints = mutableListOf()
         for (i in 0 until arrayOnOffStrings.size/2){
-            originArrayOnOff.add(OnOffVibration(true,arrayOnOffStrings[i*2].toLong(),arrayOnOffStrings[i*2+1].toLong()))
+            originArrayOnOff.add(OnOffVibration(arrayOnOffStrings[i*2].toLong(),arrayOnOffStrings[i*2+1].toLong()))
         }
         for (i in 0 until pathPointsStrings.size/2){
             originPathPoints.add(AmpPoint(pathPointsStrings[i*2].toInt(),pathPointsStrings[i*2+1].toInt()))
@@ -103,11 +136,11 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
         this.duration = to
         this.arrayOnOff =  mutableListOf()
         for(onOff in originArrayOnOff){
-            this.arrayOnOff.add( OnOffVibration(true, (onOff.stTime * scale).toLong(), (onOff.fnTime*scale).toLong()) )
+            this.arrayOnOff.add( OnOffVibration((onOff.stTime * scale).toLong(), (onOff.fnTime*scale).toLong()) )
         }
         this.pathPoints = mutableListOf()
         for (point in originPathPoints){
-            this.pathPoints.add(AmpPoint((point.x * scale).toInt(),point.y))
+            this.pathPoints.add(AmpPoint((point.timing * scale).toInt(),point.amp))
         }
         return true
     }
@@ -121,12 +154,13 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
         maxAmp = to
         val scale = to.toFloat() / 255F
         for (i in 0 until originPathPoints.size) {
-            this.pathPoints[i].y = (originPathPoints[i].y * scale).toInt()
+            this.pathPoints[i].amp = (originPathPoints[i].amp * scale).toInt()
         }
         return true
     }
 
     fun makeBitmap(blockColor: Int, bgColor : Int ): Bitmap? {
+        if(codeName == "")return null
         val paint = Paint()
         val bgPaint = Paint()
         val bitmap = Bitmap.createBitmap(this.duration,255, Bitmap.Config.ARGB_8888)
@@ -136,7 +170,7 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
         val ampPath = Path()
             ampPath.moveTo(0F, 255F)
             for(point in this.pathPoints){
-                ampPath.lineTo(point.x.toFloat(), 255F - point.y.toFloat())
+                ampPath.lineTo(point.timing.toFloat(), 255F - point.amp.toFloat())
             }
             ampPath.lineTo(duration.toFloat(),255F)
             ampPath.close()
@@ -162,16 +196,9 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
     fun getVibrationEffect() : VibrationEffect{
         //mspv (ms per vibe) 만큼 자르기
 
-        val timings = MutableList(duration/mspv){ mspv.toLong() }
-        val amplitudes = MutableList(duration/mspv){0}
-        for (onOff in arrayOnOff){
-            for(i in onOff.stTime/mspv until onOff.fnTime/mspv){
-                amplitudes[i.toInt()] = findAmp((i*mspv).toInt())
-            }
-        }
         /*Log.v("timings",timings.toString())
         Log.v("amplitudes",amplitudes.toString())*/
-        return VibrationEffect.createWaveform(timings.toLongArray(),amplitudes.toIntArray(),-1)
+        return VibrationEffect.createWaveform(getTimingsArray().toLongArray(),getAmplitudesArray().toIntArray(),-1)
     }
     fun getTimingsArray(): MutableList<Long> {
         return MutableList(duration/mspv){ mspv.toLong() }
@@ -188,10 +215,10 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
 
 
     fun saveAsFile(fileOutputStream: FileOutputStream){
-        Log.i("save arrayOnOff", originArrayOnOff.toString())
-        Log.i("save originPathPoints", originPathPoints.toString())
-        val stArOF = originArrayOnOff.toString()
-        val stPP = originPathPoints.toString()
+//        Log.i("save arrayOnOff", originArrayOnOff.toString())
+//        Log.i("save originPathPoints", originPathPoints.toString())
+        val stArOF = originArrayOnOff.joinToString("_")
+        val stPP = originPathPoints.joinToString("_")
 
         fileOutputStream.write(stArOF.toByteArray())
         fileOutputStream.write("\n".toByteArray())
@@ -200,23 +227,19 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
         fileOutputStream.write(originDuration.toString().toByteArray())
         fileOutputStream.write("\n".toByteArray())
         fileOutputStream.write(duration.toString().toByteArray())
+        fileOutputStream.write("\n".toByteArray())
+        fileOutputStream.write(blockColor.toString().toByteArray())
         fileOutputStream.close()
     }
 
     @Throws(ImportWrongFileException::class)
     private fun stringToOnOffArray(inp : String): MutableList<OnOffVibration> {
-        val tempList = inp.replace("[","").replace("]","").replace(" ","").split(",","(",")")
-        val arraySize = tempList.size / 5
+        val tempList = inp.split("_")
         val onOffArray = mutableListOf<OnOffVibration>()
         try {
-            for (i in 0 until arraySize) {
-                onOffArray.add(
-                    OnOffVibration(
-                        tempList[i * 5 + 1].replace("is_On=", "").toBoolean(),
-                        tempList[i * 5 + 2].replace("stTime=", "").toLong(),
-                        tempList[i * 5 + 3].replace("fnTime=", "").toLong()
-                    )
-                )
+            for (i in tempList) {
+                val temp = i.split(",")
+                onOffArray.add(OnOffVibration(temp[0].toLong(), temp[1].toLong()))
             }
         }catch (e: Exception){
             throw ImportWrongFileException("wrong OnOffArray String, can't change to OnOffArray")
@@ -225,17 +248,12 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
     }
     @Throws(ImportWrongFileException::class)
     private fun stringToPathPoints(inp : String): MutableList<AmpPoint> {
-        val tempList = inp.replace("[","").replace("]","").replace(" ","").split(",","(",")")
-        val arraySize = tempList.size / 4
+        val tempList = inp.split("_")
         val points = mutableListOf<AmpPoint>()
         try {
-            for (i in 0 until arraySize) {
-                points.add(
-                    AmpPoint(
-                        tempList[i * 4 + 1].replace("x=", "").toInt(),
-                        tempList[i * 4 + 2].replace("y=", "").toInt()
-                    )
-                )
+            for (i in tempList) {
+                val temp = i.split(",")
+                points.add(AmpPoint(temp[0].toInt(), temp[1].toInt()))
             }
         }catch (e: Exception){
             throw ImportWrongFileException("wrong PathPoints String, can't change to PathPoints")
@@ -244,15 +262,15 @@ class CustomVibration(var originArrayOnOff : MutableList<OnOffVibration>, var or
     }
     private fun findAmp(time : Int) : Int{
         if(pathPoints.size == 0) return 0
-        if (time < pathPoints[0].x){ //맨 처음 point 보다 앞에 있을 때
-            return xyTime(0,0,pathPoints[0].x,pathPoints[0].y,time)
+        if (time < pathPoints[0].timing){ //맨 처음 point 보다 앞에 있을 때
+            return xyTime(0,0,pathPoints[0].timing,pathPoints[0].amp,time)
         }
         for (i in 0 until pathPoints.size-1){
-            if(pathPoints[i].x <= time && time < pathPoints[i+1].x){
-                return xyTime(pathPoints[i].x,pathPoints[i].y,pathPoints[i+1].x,pathPoints[i+1].y,time)
+            if(pathPoints[i].timing <= time && time < pathPoints[i+1].timing){
+                return xyTime(pathPoints[i].timing,pathPoints[i].amp,pathPoints[i+1].timing,pathPoints[i+1].amp,time)
             }
         }
-        return xyTime(pathPoints.last().x,pathPoints.last().y,duration,0,time)
+        return xyTime(pathPoints.last().timing,pathPoints.last().amp,duration,0,time)
     }
     private fun xyTime(x1 : Int, y1 : Int, x2 : Int, y2 : Int, time : Int) : Int = if(x1 == x2) y1 else (((y1 - y2) / (x1 - x2).toFloat()) * (time - x1) + y1).roundToInt()
 

@@ -3,4 +3,15 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="blockBackground">#ffffff</color>
     <color name="blockBorder">#000000</color>
+    <color name="Red">#FF0000</color>
+    <color name="Lime">#00FF00</color>
+    <color name="Blue">#0000FF	</color>
+    <color name="Yellow">#FFFF00</color>
+    <color name="Cyan">#00FFFF</color>
+    <color name="Magenta">#FF00FF</color>
+    <color name="Maroon">#800000</color>
+    <color name="Olive">#808000</color>
+    <color name="Green">#008000</color>
+    <color name="Purple">#800080</color>
+    <color name="Teal">#008080</color>
 </resources>

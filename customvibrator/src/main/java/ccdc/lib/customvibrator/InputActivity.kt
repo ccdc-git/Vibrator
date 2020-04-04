@@ -8,23 +8,24 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import kotlinx.android.synthetic.main.input_main.*
-import java.io.File
 import java.io.FileNotFoundException
-import java.net.FileNameMap
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 class InputActivity : AppCompatActivity() {
-    var recording : Boolean = false
+    private var recording = false
     private lateinit var arrayOnOff : ArrayList<OnOffVibration>
     private var duration = 0
     lateinit var startTime : LocalTime
-    val mHandler = Handler()
+    private var mHandler = Handler()
     private lateinit var myThread: CircleThread
     private lateinit var customVibration : CustomVibration
-    private val MAX_DURATION : Int = 4000
+    private val maxDuration : Int = 4000
     private var fileName : String = ""
 
 
@@ -32,7 +33,7 @@ class InputActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.input_main)
 
-        InputVibrationView_rail.maxDuration = MAX_DURATION
+        InputVibrationView_rail.maxDuration = maxDuration
 
 
         myThread = CircleThread()
@@ -47,7 +48,7 @@ class InputActivity : AppCompatActivity() {
             }
         }
 
-        //test 화면으로 이동
+        //button
         button_toTest.setOnClickListener {
             if(saveCustomVibration()) {
                 val intentToTest = Intent(applicationContext, TestActivity::class.java)
@@ -62,6 +63,27 @@ class InputActivity : AppCompatActivity() {
                 finish()
             }
         }
+        //spinner
+        val items = resources.getStringArray(R.array.spinner_color_items)
+        val spinnerAdapter = ArrayAdapter(this,R.layout.support_simple_spinner_dropdown_item,items)
+        spinner.adapter = spinnerAdapter
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val color = getColor(resources.getIdentifier(items[position],"color",packageName))
+                parent?.setBackgroundColor(color)
+                if(::customVibration.isInitialized){
+                    customVibration.blockColor = color
+                    VibeBlockView_testing_main.setBlock(96F)
+                }
+            }
+        }
     }
 
     private fun saveCustomVibration(): Boolean {
@@ -71,18 +93,18 @@ class InputActivity : AppCompatActivity() {
                 Toast.makeText(this,"파일이름을 입력하세요",Toast.LENGTH_LONG).show()
                 return false
             }
-            if(fileName != newFileName){ //새로운 파일이름을 받으면 원래 있던걸 삭제하고 다시 입력
-                deleteFile(fileName)  //원래 파일이 있는지 없는지는 중요하지 않음
-                fileName = newFileName
-            }
-            if(isExist(fileName)){
-                Toast.makeText(this,"이미 있는 파일이름 입니다.",Toast.LENGTH_LONG).show()
-                fileName = ""
-                return false
-            }
+            if(newFileName != fileName){
+                if(isExist(newFileName)){
+                    Toast.makeText(this,"이미 있는 파일이름 입니다.",Toast.LENGTH_LONG).show()
+                    return false
+                }else{
+                    deleteFile(fileName) //원래있던파일 삭제
+                }
+            } //파일이름이 안바뀌었으면 그대로 덮어씌우기
             return try {
-                val fOS = openFileOutput(fileName, Context.MODE_PRIVATE)
+                val fOS = openFileOutput(newFileName, Context.MODE_PRIVATE)
                 customVibration.saveAsFile(fOS)
+                fileName = newFileName
                 true
             }catch (e:FileNotFoundException){
                 Toast.makeText(applicationContext,"저장실패",Toast.LENGTH_LONG).show()
@@ -105,7 +127,7 @@ class InputActivity : AppCompatActivity() {
             Log.i("action",event?.action.toString())
             when(event?.action){
                 MotionEvent.ACTION_DOWN-> {
-                    arrayOnOff.add(OnOffVibration(true,ChronoUnit.MILLIS.between(startTime,LocalTime.now())/10*10,0))
+                    arrayOnOff.add(OnOffVibration(ChronoUnit.MILLIS.between(startTime,LocalTime.now())/10*10,0))
                 }
                 MotionEvent.ACTION_UP -> {
                     arrayOnOff[arrayOnOff.lastIndex].fnTime = ChronoUnit.MILLIS.between(startTime,LocalTime.now())/10*10
@@ -122,7 +144,7 @@ class InputActivity : AppCompatActivity() {
     inner class CircleThread : Thread(){
         override fun run() {
             val passedMillis = (ChronoUnit.MILLIS.between(startTime,LocalTime.now())).toInt()
-            if (passedMillis <= MAX_DURATION) {
+            if (passedMillis <= maxDuration) {
                 InputVibrationView_rail.arrayOnOff = this@InputActivity.arrayOnOff
                 InputVibrationView_rail.passedMillis = passedMillis.toFloat()
                 InputVibrationView_rail.invalidate()
@@ -133,7 +155,7 @@ class InputActivity : AppCompatActivity() {
                 }
             }
             else{
-                whenRecordingFinish(MAX_DURATION)
+                whenRecordingFinish(maxDuration)
             }
         }
     }
@@ -155,7 +177,8 @@ class InputActivity : AppCompatActivity() {
         }
         this.duration = passedMillis10
 
-        customVibration = CustomVibration(arrayOnOff,passedMillis10,EditText_fileName.text.toString())
+        customVibration = CustomVibration(arrayOnOff,passedMillis10,"temptemp")
+        customVibration.blockColor = getColor(resources.getIdentifier(spinner.selectedItem.toString(),"color",packageName))
         VibeBlockView_testing_main.customVibration = customVibration
         VibeBlockView_testing_main.setBlock(96F)
 

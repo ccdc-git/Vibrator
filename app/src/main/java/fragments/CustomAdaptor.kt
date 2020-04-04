@@ -3,17 +3,14 @@ package fragments
 import com.ccdc.vibrator.R
 import android.content.Context
 import android.util.Log
-import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import ccdc.lib.customvibrator.CustomVibration
 import kotlinx.android.synthetic.main.custom_fragment_recycle_items.view.*
-import kotlinx.android.synthetic.main.fragment_custom.view.*
 import java.io.FileInputStream
 
-class CustomAdaptor(private var myDataset: MutableList<CustomVibration> , private var onCustomInput: OnCustomInput) :
+class CustomAdaptor(private var myDataSet: MutableList<CustomVibration> , private var onCustomInput: OnCustomInput) :
     RecyclerView.Adapter<CustomAdaptor.MyViewHolder>(){
     var mContext : Context? = null
 
@@ -44,8 +41,8 @@ class CustomAdaptor(private var myDataset: MutableList<CustomVibration> , privat
             }
             return@setOnTouchListener false
         }
-        holder.recyclerItem.VibeBlockView_fragment_custom_item.customVibration = myDataset[position]
-        (holder.recyclerItem.TextView_fragment_custom_title as TextView).text = myDataset[position].codeName
+        holder.recyclerItem.VibeBlockView_fragment_custom_item.customVibration = myDataSet[position]
+        (holder.recyclerItem.TextView_fragment_custom_title as TextView).text = myDataSet[position].codeName
         holder.recyclerItem.VibeBlockView_fragment_custom_item.setBlock(96F)
 
     }
@@ -71,12 +68,12 @@ class CustomAdaptor(private var myDataset: MutableList<CustomVibration> , privat
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = myDataset.size
+    override fun getItemCount() = myDataSet.size
 
     fun removeItemAt(index : Int) : Boolean{
         return try {
-            mContext!!.deleteFile(this.myDataset[index].codeName)
-            this.myDataset.removeAt(index)
+            mContext!!.deleteFile(this.myDataSet[index].codeName)
+            this.myDataSet.removeAt(index)
             this.notifyItemRemoved(index)
             updatePreference()
             true
@@ -88,7 +85,7 @@ class CustomAdaptor(private var myDataset: MutableList<CustomVibration> , privat
         return try {
 
             val fIS : FileInputStream = mContext!!.openFileInput(fileName)
-            this.myDataset.add(index, CustomVibration(fIS,fileName))
+            this.myDataSet.add(index, CustomVibration(fIS,fileName))
             this.notifyItemInserted(index)
             updatePreference()
             true
@@ -99,8 +96,8 @@ class CustomAdaptor(private var myDataset: MutableList<CustomVibration> , privat
     fun add(fileName: String): Boolean {
         return try {
             val fIS : FileInputStream = mContext!!.openFileInput(fileName)
-            this.myDataset.add(myDataset.size,CustomVibration(fIS,fileName))
-            this.notifyItemInserted(myDataset.size)
+            this.myDataSet.add(myDataSet.size,CustomVibration(fIS,fileName))
+            this.notifyItemInserted(myDataSet.size)
             updatePreference()
             true
         }catch (e: IndexOutOfBoundsException){
@@ -110,9 +107,9 @@ class CustomAdaptor(private var myDataset: MutableList<CustomVibration> , privat
     }
     fun removeAll() :Boolean{
         try{
-            while(this.myDataset.isNotEmpty()){
-                removeItemAt(myDataset.size-1)
-                this.notifyItemRemoved(myDataset.size-1)
+            while(this.myDataSet.isNotEmpty()){
+                removeItemAt(myDataSet.size-1)
+                this.notifyItemRemoved(myDataSet.size-1)
             }
         }catch (e: IndexOutOfBoundsException){
             return false
@@ -120,16 +117,13 @@ class CustomAdaptor(private var myDataset: MutableList<CustomVibration> , privat
         updatePreference()
         return true
     }
-    fun updatePreference(){
+    private fun updatePreference(){
         val mList = mutableListOf<String>()
-        for (cv in myDataset){
+        for (cv in myDataSet){
             mList.add(cv.codeName)
         }
         val pref = mContext!!.getSharedPreferences("customs", Context.MODE_PRIVATE)
         pref.edit().putString("myList",mList.joinToString("\\")).apply()
     }
-
-
-    private fun dpToPx(size : Float, context : Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size,context.resources.displayMetrics).toInt()
 
 }
