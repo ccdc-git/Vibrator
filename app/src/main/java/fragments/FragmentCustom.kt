@@ -33,7 +33,7 @@ class FragmentCustom : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: CustomAdaptor
     private lateinit var viewManager: RecyclerView.LayoutManager
-    val myDataSet : MutableList<CustomVibration> = mutableListOf()
+    private val myDataSet : MutableList<String> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +51,7 @@ class FragmentCustom : Fragment() {
         val fileNames = pref.getString("myList","")?.split("\\")
 
         for (name in fileNames!!){
-            try {
-                val fIO: FileInputStream = activity!!.openFileInput(name)
-                myDataSet.add(CustomVibration(fIO,name))
-            }catch (e : FileNotFoundException){
-                Log.d("Exception","no file")
-            }
+            myDataSet.add(name)
         }
     }
 
@@ -71,7 +66,7 @@ class FragmentCustom : Fragment() {
 
         this.recyclerView = rootView.RecyclerView_fragment_custom_customViews
         this.viewManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        this.viewAdapter = CustomAdaptor(this.myDataSet,object : OnCustomInput(){
+        this.viewAdapter = CustomAdaptor(this.myDataSet, object : OnCustomInput(){
             override fun itemClicked(codeName: String) {
                 mainActivity.addInMyRVC(codeName)
             }

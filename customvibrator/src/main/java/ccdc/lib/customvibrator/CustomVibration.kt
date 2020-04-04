@@ -45,6 +45,8 @@ class CustomVibration{
     val mspv = 25 //milli second per vibration
     var blockColor = Color.BLACK
     var bgColor = Color.WHITE
+    private val paint = Paint()
+    private val bgPaint = Paint()
 
     //empty CustomVibration
     constructor(){
@@ -161,8 +163,6 @@ class CustomVibration{
 
     fun makeBitmap(blockColor: Int, bgColor : Int ): Bitmap? {
         if(codeName == "")return null
-        val paint = Paint()
-        val bgPaint = Paint()
         val bitmap = Bitmap.createBitmap(this.duration,255, Bitmap.Config.ARGB_8888)
         val ctCanvas = Canvas(bitmap)
         ctCanvas.drawColor(bgColor)
