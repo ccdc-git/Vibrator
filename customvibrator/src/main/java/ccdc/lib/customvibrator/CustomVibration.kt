@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.*
 import android.os.Build
 import android.os.VibrationEffect
-import android.util.Log
 import androidx.annotation.RequiresApi
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -28,10 +27,10 @@ data class AmpPoint(
 }
 
 class CustomVibration{
-    private lateinit var originArrayOnOff : MutableList<OnOffVibration>
-    private lateinit var originPathPoints: MutableList<AmpPoint>
+    private var originArrayOnOff : MutableList<OnOffVibration>
+    private var originPathPoints: MutableList<AmpPoint>
     private var originDuration : Int = 0
-    lateinit var codeName: String
+    var codeName: String
 
     lateinit var arrayOnOff : MutableList<OnOffVibration>
         private set
@@ -123,10 +122,11 @@ class CustomVibration{
             "decrescendo" -> Color.BLACK
             else -> Color.MAGENTA
         }
+        this.codeName = codeName
     }
 
 
-    fun changeDuration(to : Int): Boolean {
+    fun changeDuration(to: Int): Boolean {
         /*
             지속시간을 바꿈
             to는 바꿀 지속시간
@@ -141,8 +141,9 @@ class CustomVibration{
             this.arrayOnOff.add( OnOffVibration((onOff.stTime * scale).toLong(), (onOff.fnTime*scale).toLong()) )
         }
         this.pathPoints = mutableListOf()
+        val scaleAmp = maxAmp / 255F
         for (point in originPathPoints){
-            this.pathPoints.add(AmpPoint((point.timing * scale).toInt(),point.amp))
+            this.pathPoints.add(AmpPoint((point.timing * scale).toInt(), (point.amp *scaleAmp).toInt()))
         }
         return true
     }
@@ -161,19 +162,19 @@ class CustomVibration{
         return true
     }
 
-    fun makeBitmap(blockColor: Int, bgColor : Int ): Bitmap? {
+    fun makeBitmap(): Bitmap? {
         if(codeName == "")return null
         val bitmap = Bitmap.createBitmap(this.duration,255, Bitmap.Config.ARGB_8888)
         val ctCanvas = Canvas(bitmap)
         ctCanvas.drawColor(bgColor)
 
         val ampPath = Path()
-            ampPath.moveTo(0F, 255F)
-            for(point in this.pathPoints){
-                ampPath.lineTo(point.timing.toFloat(), 255F - point.amp.toFloat())
-            }
-            ampPath.lineTo(duration.toFloat(),255F)
-            ampPath.close()
+        ampPath.moveTo(0F, 255F)
+        for(point in this.pathPoints){
+            ampPath.lineTo(point.timing.toFloat(), 255F - point.amp.toFloat())
+        }
+        ampPath.lineTo(duration.toFloat(),255F)
+        ampPath.close()
         val blockPaths = Path()
         for(ons in this.arrayOnOff){
             blockPaths.addRect(ons.stTime.toFloat(),0F, ons.fnTime.toFloat(),255F,Path.Direction.CW)
@@ -237,6 +238,7 @@ class CustomVibration{
         val tempList = inp.split("_")
         val onOffArray = mutableListOf<OnOffVibration>()
         try {
+            if(tempList.isEmpty()) return onOffArray
             for (i in tempList) {
                 val temp = i.split(",")
                 onOffArray.add(OnOffVibration(temp[0].toLong(), temp[1].toLong()))

@@ -1,6 +1,7 @@
 package com.ccdc.vibrator
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,9 +10,12 @@ import android.os.Vibrator
 import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import ccdc.lib.customvibrator.CustomVibration
+import ccdc.lib.customvibrator.VibeBlockView
 import fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_staccato.*
@@ -21,6 +25,24 @@ import java.io.InputStream
 
 
 class MainActivity : AppCompatActivity() {
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if(ev != null)
+        //Log.i("ev",MotionEvent.actionToString(ev.action))
+        if (ev?.action  == MotionEvent.ACTION_DOWN){
+            val currentFocusView = currentFocus
+            if(currentFocusView is VibeBlockView){
+                var outRect = Rect()
+                currentFocusView.getGlobalVisibleRect(outRect)
+                if(!outRect.contains(ev.rawX.toInt() , ev.rawY.toInt())){
+                    myRVC.onClearFocus(currentFocusView)
+                    val imm : InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(currentFocusView.windowToken,0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     private lateinit var myRVC : MyRecyclerViewController
 
     private val fragmentManager = supportFragmentManager

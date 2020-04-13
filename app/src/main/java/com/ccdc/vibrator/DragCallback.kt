@@ -3,7 +3,7 @@ package com.ccdc.vibrator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
-class DragCallbackListener(private val myAdapter: MyAdapter) : ItemTouchHelper.Callback() {
+class DragCallback(private val myAdapter: MyAdapter) : ItemTouchHelper.Callback() {
 
 
     override fun getMovementFlags(
@@ -12,6 +12,9 @@ class DragCallbackListener(private val myAdapter: MyAdapter) : ItemTouchHelper.C
     ): Int {
         val dragFlags = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         val swipeDown = ItemTouchHelper.DOWN
+        if(myAdapter.focused){
+            return 0
+        }
         return makeMovementFlags(dragFlags, swipeDown)
     }
 
@@ -45,6 +48,7 @@ class DragCallbackListener(private val myAdapter: MyAdapter) : ItemTouchHelper.C
         super.clearView(recyclerView, viewHolder)
         if(viewHolder is MyAdapter.MyViewHolder){
             myAdapter.onRowCleared(viewHolder)
+            getMovementFlags(recyclerView, viewHolder)
         }
     }
 

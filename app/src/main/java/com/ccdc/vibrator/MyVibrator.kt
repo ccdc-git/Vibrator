@@ -9,14 +9,13 @@ import ccdc.lib.customvibrator.CustomVibration
 class MyVibrator(val vibrator: Vibrator, val mDataset : MutableList<CustomVibration>) {
     lateinit var timingsArrayAll : MutableList<Long>
     lateinit var amplitudeArrayAll : MutableList<Int>
-    val bps = 50
     fun vibrate(){
         if(mDataset.isEmpty()){
             return
         }
         timingsArrayAll = mutableListOf()
         amplitudeArrayAll = mutableListOf()
-        //dataset에 맞춰서 setVibrationEffect List _완
+        //dataset 에 맞춰서 setVibrationEffect List _완
         for (shot in mDataset){
             timingsArrayAll.addAll(shot.getTimingsArray())
             amplitudeArrayAll.addAll(shot.getAmplitudesArray())
@@ -26,14 +25,10 @@ class MyVibrator(val vibrator: Vibrator, val mDataset : MutableList<CustomVibrat
             Log.d("size", "something wrong")
             return
         }
-        //Log.v("durationArrayAll",timingsArrayAll.toString())
-        //Log.v("amplitudeArrayAll",amplitudeArrayAll.toString())
         if(!smoothing()){
             Log.d("smoothing", "something wrong")
             return
         }
-        //Log.v("durationArrayAll",timingsArrayAll.toString())
-       //Log.v("amplitudeArrayAll",amplitudeArrayAll.toString())
         vibrator.vibrate(VibrationEffect.createWaveform(timingsArrayAll.toLongArray(),amplitudeArrayAll.toIntArray(),-1))
 
     }

@@ -1,10 +1,10 @@
 package com.ccdc.vibrator
 
 import android.content.Context
-import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ccdc.lib.customvibrator.CustomVibration
 import kotlinx.android.synthetic.main.main_recycle_items.view.*
@@ -12,7 +12,10 @@ import java.util.*
 
 class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val startDragListener: OnStartDragListener) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>(),
-    DragCallbackListener.Listener{
+    DragCallback.Listener{
+
+    var moved : Boolean = false
+    var focused : Boolean = false
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -27,7 +30,6 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
         val recyclerItem = LayoutInflater.from(parent.context)
             .inflate(R.layout.main_recycle_items, parent, false) as View
         // set the view's size, margins, paddings and layout parameters
-
         return MyViewHolder(recyclerItem)
     }
 
@@ -81,6 +83,7 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
     }
 
     override fun onRowMoved(fromPosition: Int, toPosition: Int) {
+        moved = true
 //        Log.i("Moved","from $fromPosition to $toPosition")
         if(fromPosition < toPosition){
             for(i in fromPosition until toPosition){
@@ -97,22 +100,25 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
     }
 
     override fun onRowSelected(itemViewHolder: MyViewHolder) {
+        moved = false
         val context = itemViewHolder.recyclerItem.context
-        val params =  itemViewHolder.recyclerItem.VibeBlockView_recyclerView.layoutParams
         itemViewHolder.recyclerItem.VibeBlockView_recyclerView.setBlock(80F)
         itemViewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = context.getDrawable(R.drawable.selected_item)
-        //Log.i("selected",itemViewHolder.adapterPosition.toString())
     }
-
     override fun onRowCleared(itemViewHolder: MyViewHolder) {
-        val context = itemViewHolder.recyclerItem.context
-        val params =  itemViewHolder.recyclerItem.VibeBlockView_recyclerView.layoutParams
         itemViewHolder.recyclerItem.VibeBlockView_recyclerView.setBlock(96F)
         itemViewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = null
-       // Log.i("Cleared",itemViewHolder.adapterPosition.toString())
+        if(!moved){
+            itemViewHolder.recyclerItem.VibeBlockView_recyclerView.isFocusableInTouchMode = true
+            focused = itemViewHolder.recyclerItem.VibeBlockView_recyclerView.requestFocus()
+            if(focused){
+                this.startDragListener.onFocused(itemViewHolder)
+            }
+        }
     }
 
     override fun onSwiped(itemViewHolder: MyViewHolder) {
+        moved = true
         removeItemAt(itemViewHolder.adapterPosition)
     }
     private fun dpToPx(size : Float, context : Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size,context.resources.displayMetrics).toInt()

@@ -1,5 +1,6 @@
 package com.ccdc.vibrator
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
 
@@ -12,5 +13,7 @@ interface OnStartDragListener {
      *
      * @param viewHolder The holder of the view to drag.
      */
-    fun onStartDrag(viewHolder: ViewHolder)
+    fun onStartDrag(viewHolder: MyAdapter.MyViewHolder)
+    fun onFocused(viewHolder: MyAdapter.MyViewHolder)
+    fun onClearFocus(viewHolder: View?)
 }

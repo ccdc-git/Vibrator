@@ -51,7 +51,7 @@ class InputActivity : AppCompatActivity() {
         //button
         button_toTest.setOnClickListener {
             if(saveCustomVibration()) {
-                val intentToTest = Intent(applicationContext, TestActivity::class.java)
+                val intentToTest = Intent(applicationContext, EditActivity::class.java)
                 intentToTest.putExtra("fileName", fileName)
                 startActivity(intentToTest)
             }

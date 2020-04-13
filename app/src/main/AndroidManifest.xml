@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name="ccdc.lib.customvibrator.InputActivity"/>
-        <activity android:name="ccdc.lib.customvibrator.TestActivity"/>
+        <activity android:name="ccdc.lib.customvibrator.EditActivity"/>
     </application>
     <uses-permission android:name="android.permission.VIBRATE"/>
 
