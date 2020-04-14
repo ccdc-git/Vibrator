@@ -1,10 +1,12 @@
 package com.ccdc.vibrator
 
 import android.content.Context
+import android.graphics.Rect
+import android.graphics.drawable.RippleDrawable
+import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ccdc.lib.customvibrator.CustomVibration
 import kotlinx.android.synthetic.main.main_recycle_items.view.*
@@ -14,7 +16,6 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
     RecyclerView.Adapter<MyAdapter.MyViewHolder>(),
     DragCallback.Listener{
 
-    var moved : Boolean = false
     var focused : Boolean = false
 
     // Provide a reference to the views for each data item
@@ -37,17 +38,51 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.recyclerItem.setOnLongClickListener{
-            //Log.i("click","LongClicked")
-            this.startDragListener.onStartDrag(holder)
-            return@setOnLongClickListener true
+        val recyclerItem = holder.recyclerItem
+        recyclerItem.setOnLongClickListener {
+            Log.i("click","LongClicked")
+            this.startDragListener.onLongClickedDown()
+            setUpListener(recyclerItem,holder)
+            return@setOnLongClickListener false
         }
-        val context : Context = holder.recyclerItem.context
-        holder.recyclerItem.VibeBlockView_recyclerView.customVibration = myDataset[position]
-        (holder.recyclerItem.RecyclerView_TextView_title as TextView).text = ""
-        holder.recyclerItem.VibeBlockView_recyclerView.setBlock(96F)
+
+        recyclerItem.VibeBlockView_recyclerView.customVibration = myDataset[position]
+        (recyclerItem.RecyclerView_TextView_title as TextView).text = ""
+        recyclerItem.VibeBlockView_recyclerView.setBlock(96F)
 
     }
+    private fun setUpListener(v: View, holder: MyViewHolder){
+        v.setOnTouchListener{view,e ->
+            if (e.action == MotionEvent.ACTION_UP) {  //롱클릭 후 바로 떼면 포커싱
+                this.startDragListener.onFocused(holder)
+                removeTouchListener(v)
+            }else if(e.action == MotionEvent.ACTION_MOVE){ //조금의 움직임은 허용 벗어나면 startDrag로
+                setMoveListener(view,e,holder)
+            }
+            return@setOnTouchListener false
+        }
+    }
+    private fun setMoveListener(v : View, e: MotionEvent, holder: MyViewHolder){
+        val downX = e.x.toInt()
+        val downY = e.y.toInt()
+        val rect = Rect(downX - 25, downY - 25, downX + 25, downY +25)
+        v.setOnTouchListener(){ _, event ->
+            Log.i("li","setMove ${MotionEvent.actionToString(e.action)}")
+            if (event.action == MotionEvent.ACTION_MOVE){
+                if(!rect.contains(event.x.toInt(), event.y.toInt())){ // 벗어날 시 startDrag
+                    this.startDragListener.onStartDrag(holder)
+                    this.startDragListener.onLongClickedUp()
+                    removeTouchListener(v)
+                }
+            }else if(event.action == MotionEvent.ACTION_UP){ // 조금의 움직임 허용
+                this.startDragListener.onFocused(holder)
+                this.startDragListener.onLongClickedUp()
+                removeTouchListener(v)
+            }
+            return@setOnTouchListener false
+        }
+    }
+    private fun removeTouchListener(v : View){v.setOnTouchListener { _, _ ->  return@setOnTouchListener false}}
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = myDataset.size
@@ -83,7 +118,6 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
     }
 
     override fun onRowMoved(fromPosition: Int, toPosition: Int) {
-        moved = true
 //        Log.i("Moved","from $fromPosition to $toPosition")
         if(fromPosition < toPosition){
             for(i in fromPosition until toPosition){
@@ -100,25 +134,18 @@ class MyAdapter(private var myDataset: MutableList<CustomVibration>, private val
     }
 
     override fun onRowSelected(itemViewHolder: MyViewHolder) {
-        moved = false
         val context = itemViewHolder.recyclerItem.context
-        itemViewHolder.recyclerItem.VibeBlockView_recyclerView.setBlock(80F)
+        itemViewHolder.recyclerItem.VibeBlockView_recyclerView.hideRipple()
+        itemViewHolder.recyclerItem.VibeBlockView_recyclerView.setBlock(88F)
         itemViewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = context.getDrawable(R.drawable.selected_item)
     }
     override fun onRowCleared(itemViewHolder: MyViewHolder) {
+        itemViewHolder.recyclerItem.VibeBlockView_recyclerView.showRipple()
         itemViewHolder.recyclerItem.VibeBlockView_recyclerView.setBlock(96F)
         itemViewHolder.recyclerItem.ConstraintLayout_recyclerItem.background = null
-        if(!moved){
-            itemViewHolder.recyclerItem.VibeBlockView_recyclerView.isFocusableInTouchMode = true
-            focused = itemViewHolder.recyclerItem.VibeBlockView_recyclerView.requestFocus()
-            if(focused){
-                this.startDragListener.onFocused(itemViewHolder)
-            }
-        }
     }
 
     override fun onSwiped(itemViewHolder: MyViewHolder) {
-        moved = true
         removeItemAt(itemViewHolder.adapterPosition)
     }
     private fun dpToPx(size : Float, context : Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size,context.resources.displayMetrics).toInt()

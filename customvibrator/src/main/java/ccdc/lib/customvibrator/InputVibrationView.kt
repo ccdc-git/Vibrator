@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.RippleDrawable
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
@@ -57,6 +58,11 @@ constructor(context: Context, attr : AttributeSet? = null,defStyleAttr : Int = 0
 
 class VibeBlockView @JvmOverloads  //한 블럭 보여주기
 constructor(context: Context, attr : AttributeSet? = null,defStyleAttr : Int = 0 ) : androidx.appcompat.widget.AppCompatImageView(context, attr, defStyleAttr) {
+
+    var customVibration : CustomVibration? = null
+    val rippleDrawable = context.getDrawable(R.drawable.ripple_animation)
+    var enableRipple = true
+
     init {
         (this as ImageView).scaleType = ScaleType.FIT_XY
         this.onFocusChangeListener =
@@ -70,7 +76,7 @@ constructor(context: Context, attr : AttributeSet? = null,defStyleAttr : Int = 0
 
             }
     }
-    var customVibration : CustomVibration? = null
+
     private fun setTouchDownListener(v :View){
         v.setOnTouchListener { v, event ->
             if(event.action == MotionEvent.ACTION_DOWN)
@@ -146,7 +152,6 @@ constructor(context: Context, attr : AttributeSet? = null,defStyleAttr : Int = 0
 
     }
 
-
     fun setBlock(sizeDp : Float){  //새로운 높이로 setting
         this.layoutParams.height = dpToPx(sizeDp)
         setBlock()
@@ -156,11 +161,18 @@ constructor(context: Context, attr : AttributeSet? = null,defStyleAttr : Int = 0
         if (cV != null){
             val bitmap = cV.makeBitmap()
             val bitmapDrawable = BitmapDrawable(this.resources,bitmap)
-            val layerDrawable = LayerDrawable(arrayOf(bitmapDrawable,context.getDrawable(R.drawable.block_bg)))
+            val layers = if(enableRipple) arrayOf(bitmapDrawable, context.getDrawable(R.drawable.block_bg), rippleDrawable)
+                            else arrayOf(bitmapDrawable, context.getDrawable(R.drawable.block_bg))
+            val layerDrawable = LayerDrawable(layers)
             this.setImageDrawable(layerDrawable)
             this.layoutParams.width = (this.layoutParams.height * (cV.duration / 1000F)).toInt()
         }
-
+    }
+    fun showRipple(){
+        enableRipple = true
+    }
+    fun hideRipple(){
+        enableRipple = false
     }
 
     private fun dpToPx(size : Float) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size,context.resources.displayMetrics).toInt()

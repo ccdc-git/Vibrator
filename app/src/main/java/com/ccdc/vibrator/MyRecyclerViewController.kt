@@ -1,7 +1,6 @@
 package com.ccdc.vibrator
 
 import android.content.Context
-import android.view.MotionEvent
 import android.view.View
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,23 +9,17 @@ import ccdc.lib.customvibrator.CustomVibration
 import kotlinx.android.synthetic.main.main_recycle_items.view.*
 
 
-class MyRecyclerViewController : OnStartDragListener{
+class MyRecyclerViewController(context: Context, recyclerView: RecyclerView, var myDataset: MutableList<CustomVibration>) : OnStartDragListener{
 
     private var itemTouchHelper: ItemTouchHelper
     private var recyclerView: RecyclerView
-    var viewAdapter: MyAdapter
-    private var viewManager: RecyclerView.LayoutManager
-    var Dataset: MutableList<CustomVibration>
+    private var viewAdapter: MyAdapter = MyAdapter(this.myDataset,this)
+    private var viewManager: RecyclerView.LayoutManager =
+        mLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
     val size : Int
-        get()=Dataset.size
+        get()=myDataset.size
 
-
-    constructor(context : Context, recyclerView: RecyclerView, myDataset : MutableList<CustomVibration>) {
-        this.Dataset = myDataset
-        this.viewManager = myLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-
-        this.viewAdapter = MyAdapter(this.Dataset,this)
-
+    init {
         this.recyclerView = recyclerView.apply {
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
@@ -41,8 +34,8 @@ class MyRecyclerViewController : OnStartDragListener{
         }
         this.itemTouchHelper =  ItemTouchHelper(DragCallback(this.viewAdapter))
         this.itemTouchHelper.attachToRecyclerView(this.recyclerView)
-
     }
+
     fun removeItemAt(index : Int ) : Boolean{
         return this.viewAdapter.removeItemAt(index)
     }
@@ -56,37 +49,37 @@ class MyRecyclerViewController : OnStartDragListener{
     override fun onStartDrag(viewHolder: MyAdapter.MyViewHolder) {
         this.itemTouchHelper.startDrag(viewHolder)
     }
-    lateinit var listener: RecyclerView.OnItemTouchListener
+
 
     override fun onFocused(viewHolder: MyAdapter.MyViewHolder) {
-        listener = object : RecyclerView.OnItemTouchListener{
-            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
-            }
-            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                return false
-            }
-            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-            }
-
-        }
-        this.recyclerView.addOnItemTouchListener(listener)
-        (this.viewManager as myLinearLayoutManager).isScrollEnabled = false
+        viewHolder.recyclerItem.VibeBlockView_recyclerView.hideRipple()
+        viewHolder.recyclerItem.VibeBlockView_recyclerView.isFocusableInTouchMode = true
+        viewAdapter.focused =  viewHolder.recyclerItem.VibeBlockView_recyclerView.requestFocus()
+        (this.viewManager as mLinearLayoutManager).isScrollEnabled = false
+        viewHolder.recyclerItem.VibeBlockView_recyclerView.setBlock()
     }
 
-    override fun onClearFocus(viewHolder: View?) {
-        if (viewHolder != null) {
-            viewHolder.clearFocus()
-            viewHolder.isFocusableInTouchMode = false
+    override fun onClearFocus(view: View?) { //view : VibeBlockView
+        if (view != null) {
+            view.clearFocus()
+            view.isFocusableInTouchMode = false
             this.viewAdapter.focused = false
-            this.recyclerView.removeOnItemTouchListener(listener)
-            (this.viewManager as myLinearLayoutManager).isScrollEnabled = true
+            (this.viewManager as mLinearLayoutManager).isScrollEnabled = true
+            view.VibeBlockView_recyclerView.showRipple()
+            view.VibeBlockView_recyclerView.setBlock()
         }
     }
 
+    override fun onLongClickedDown() {
+        (this.viewManager as mLinearLayoutManager).isScrollEnabled = false
+    }
 
+    override fun onLongClickedUp() {
+        (this.viewManager as mLinearLayoutManager).isScrollEnabled = true
+    }
 }
 
-class myLinearLayoutManager(context: Context,orientation: Int, reverseLayout : Boolean) : LinearLayoutManager(context,orientation,reverseLayout) {
+class mLinearLayoutManager(context: Context, orientation: Int, reverseLayout : Boolean) : LinearLayoutManager(context,orientation,reverseLayout) {
     var isScrollEnabled : Boolean = true
     override fun canScrollHorizontally(): Boolean {
         return this.isScrollEnabled && super.canScrollHorizontally()

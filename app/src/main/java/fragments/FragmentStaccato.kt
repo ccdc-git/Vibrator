@@ -24,10 +24,10 @@ class FragmentStaccato : Fragment() {
     ): View? {
         rootView = inflater.inflate(R.layout.fragment_staccato, container, false) as ViewGroup
         if(activity != null){
-            activity!!.setButton(rootView.Button_piano_staccato,true)
-            activity!!.setButton(rootView.Button_forte_staccato,true)
-            activity!!.setButton(rootView.Button_crescendo_staccato,true)
-            activity!!.setButton(rootView.Button_decrescendo_staccato,true)
+            activity!!.setButton(rootView.Button_piano_staccato)
+            activity!!.setButton(rootView.Button_forte_staccato)
+            activity!!.setButton(rootView.Button_crescendo_staccato)
+            activity!!.setButton(rootView.Button_decrescendo_staccato)
         }
         return rootView
     }

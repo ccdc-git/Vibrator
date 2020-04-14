@@ -2,39 +2,32 @@ package com.ccdc.vibrator
 
 import android.content.Context
 import android.graphics.Rect
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.Toast
-import androidx.recyclerview.widget.RecyclerView
 import ccdc.lib.customvibrator.CustomVibration
 import ccdc.lib.customvibrator.VibeBlockView
 import fragments.*
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_staccato.*
 import java.io.FileInputStream
 import java.io.FileNotFoundException
-import java.io.InputStream
 
 
 class MainActivity : AppCompatActivity() {
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if(ev != null)
-        //Log.i("ev",MotionEvent.actionToString(ev.action))
         if (ev?.action  == MotionEvent.ACTION_DOWN){
             val currentFocusView = currentFocus
             if(currentFocusView is VibeBlockView){
                 var outRect = Rect()
                 currentFocusView.getGlobalVisibleRect(outRect)
                 if(!outRect.contains(ev.rawX.toInt() , ev.rawY.toInt())){
-                    myRVC.onClearFocus(currentFocusView)
+                    myRVC.onClearFocus(currentFocusView) //포커스 해제
                     val imm : InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(currentFocusView.windowToken,0)
                 }
@@ -55,12 +48,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val myDataset = mutableListOf<CustomVibration>()
-        val vib = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        val myVibrator  = MyVibrator(vib,myDataset)
+        val mDataSet: MutableList<CustomVibration> = mutableListOf()
+        val vib : Vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        val myVibrator  = MyVibrator(vib,mDataSet)
 
         //my_recycler_view
-        myRVC = MyRecyclerViewController(this,findViewById(R.id.my_recycler_view),myDataset)
+        myRVC = MyRecyclerViewController(this,findViewById(R.id.my_recycler_view),mDataSet)
 
 
     //BottomNavigationView
@@ -72,7 +65,6 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnNavigationItemSelectedListener { item: MenuItem ->
             val transaction = fragmentManager.beginTransaction()
             when(item.itemId) {
-
                 R.id.menu_normal -> transaction.replace(R.id.frame_layout, fragmentNormal)
                     .commitAllowingStateLoss()
                 R.id.menu_staccato -> transaction.replace(R.id.frame_layout, fragmentStaccato)
@@ -81,12 +73,8 @@ class MainActivity : AppCompatActivity() {
                     .commitAllowingStateLoss()
                 else -> return@setOnNavigationItemSelectedListener true
             }
-
             return@setOnNavigationItemSelectedListener true
         }
-
-
-        //Buttons
 
 
         //playButton
@@ -100,7 +88,7 @@ class MainActivity : AppCompatActivity() {
     }//fin onCreate
 
 
-    fun setButton(button: Button, staccato : Boolean){
+    fun setButton(button: Button){
         val codeName : String = button.text.toString()
         button.text = ""
         button.setBackgroundResource( resources.getIdentifier(codeName,"mipmap",packageName))
@@ -113,7 +101,6 @@ class MainActivity : AppCompatActivity() {
             val fIS: FileInputStream = openFileInput(codeName)
             myRVC.addItemAt(myRVC.size, CustomVibration(fIS, codeName))
         }catch (e: FileNotFoundException){
-            Log.v("반쯤",codeName)
         }
     }
 

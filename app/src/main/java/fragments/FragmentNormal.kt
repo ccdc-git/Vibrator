@@ -26,10 +26,10 @@ class FragmentNormal : Fragment() {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_normal, container, false) as ViewGroup
         if (activity != null) {
-            activity!!.setButton(rootView.Button_piano_normal, false)
-            activity!!.setButton(rootView.Button_forte_normal, false)
-            activity!!.setButton(rootView.Button_crescendo_normal, false)
-            activity!!.setButton(rootView.Button_decrescendo_normal, false)
+            activity!!.setButton(rootView.Button_piano_normal)
+            activity!!.setButton(rootView.Button_forte_normal)
+            activity!!.setButton(rootView.Button_crescendo_normal)
+            activity!!.setButton(rootView.Button_decrescendo_normal)
         }
         return rootView
     }

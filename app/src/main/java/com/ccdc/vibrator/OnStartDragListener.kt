@@ -16,4 +16,6 @@ interface OnStartDragListener {
     fun onStartDrag(viewHolder: MyAdapter.MyViewHolder)
     fun onFocused(viewHolder: MyAdapter.MyViewHolder)
     fun onClearFocus(viewHolder: View?)
+    fun onLongClickedDown()
+    fun onLongClickedUp()
 }
