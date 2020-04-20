@@ -1,7 +1,10 @@
 package com.ccdc.vibrator
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Vibrator
@@ -10,6 +13,7 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.TextView
 import ccdc.lib.customvibrator.CustomVibration
 import ccdc.lib.customvibrator.VibeBlockView
 import fragments.*
@@ -88,11 +92,25 @@ class MainActivity : AppCompatActivity() {
     }//fin onCreate
 
 
-    fun setButton(button: Button){
+    @SuppressLint("ClickableViewAccessibility")
+    fun setButton(button: TextView){
         val codeName : String = button.text.toString()
         button.text = ""
-        button.setBackgroundResource( resources.getIdentifier(codeName,"mipmap",packageName))
+        val drawable = getDrawable(resources.getIdentifier(codeName,"mipmap",packageName))
+        val layerDrawable = LayerDrawable(arrayOf(button.background, drawable))
+        button.background = layerDrawable
+
+        button.setOnTouchListener { v, e ->
+
+            when(e.action){
+                MotionEvent.ACTION_DOWN -> v.elevation = 0F
+                MotionEvent.ACTION_MOVE -> v.elevation = 0F
+                else -> v.elevation = 16F
+            }
+            return@setOnTouchListener false
+        }
         button.setOnClickListener {
+            it.elevation = 16F
             myRVC.addItemAt(myRVC.size,CustomVibration(this, codeName))
         }
     }

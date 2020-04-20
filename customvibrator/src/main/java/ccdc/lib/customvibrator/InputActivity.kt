@@ -49,13 +49,6 @@ class InputActivity : AppCompatActivity() {
         }
 
         //button
-        button_toTest.setOnClickListener {
-            if(saveCustomVibration()) {
-                val intentToTest = Intent(applicationContext, EditActivity::class.java)
-                intentToTest.putExtra("fileName", fileName)
-                startActivity(intentToTest)
-            }
-        }
         button_toHome.setOnClickListener {
             if(saveCustomVibration()){
                 intent.putExtra("newFileName",fileName)

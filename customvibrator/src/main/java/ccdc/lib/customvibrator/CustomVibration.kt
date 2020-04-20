@@ -68,7 +68,7 @@ class CustomVibration{
     //default pathPoints
     constructor(arrayOnOff: ArrayList<OnOffVibration>, duration: Int, codeName : String) {
         this.originArrayOnOff = arrayOnOff
-        this.originPathPoints = mutableListOf(AmpPoint(0,255),AmpPoint(duration,255))
+        this.originPathPoints = mutableListOf(AmpPoint(0,0),AmpPoint(0,255),AmpPoint(duration,255), AmpPoint(duration,0))
         this.originDuration = duration
         this.codeName = codeName
         changeDuration(originDuration)
@@ -162,9 +162,9 @@ class CustomVibration{
         return true
     }
 
-    fun makeBitmap(): Bitmap? {
-        if(codeName == "")return null
+    fun makeBitmap(): Bitmap {
         val bitmap = Bitmap.createBitmap(this.duration,255, Bitmap.Config.ARGB_8888)
+            if(codeName == "") return bitmap //빈 bitmap 리턴
         val ctCanvas = Canvas(bitmap)
         ctCanvas.drawColor(bgColor)
 
@@ -213,6 +213,10 @@ class CustomVibration{
         }
         return amplitudes
     }
+    fun setOriginPathPoints(newPathPoints : MutableList<AmpPoint>){
+        this.originPathPoints = newPathPoints
+        changeDuration(duration)
+    }
 
 
     fun saveAsFile(fileOutputStream: FileOutputStream){
@@ -238,7 +242,7 @@ class CustomVibration{
         val tempList = inp.split("_")
         val onOffArray = mutableListOf<OnOffVibration>()
         try {
-            if(tempList.isEmpty()) return onOffArray
+            if(inp=="") return onOffArray
             for (i in tempList) {
                 val temp = i.split(",")
                 onOffArray.add(OnOffVibration(temp[0].toLong(), temp[1].toLong()))
@@ -262,17 +266,17 @@ class CustomVibration{
         }
         return points
     }
-    private fun findAmp(time : Int) : Int{
+    fun findAmp(timing : Int) : Int{
         if(pathPoints.size == 0) return 0
-        if (time < pathPoints[0].timing){ //맨 처음 point 보다 앞에 있을 때
-            return xyTime(0,0,pathPoints[0].timing,pathPoints[0].amp,time)
+        if (timing < pathPoints[0].timing){ //맨 처음 point 보다 앞에 있을 때
+            return xyTime(0,0,pathPoints[0].timing,pathPoints[0].amp,timing)
         }
         for (i in 0 until pathPoints.size-1){
-            if(pathPoints[i].timing <= time && time < pathPoints[i+1].timing){
-                return xyTime(pathPoints[i].timing,pathPoints[i].amp,pathPoints[i+1].timing,pathPoints[i+1].amp,time)
+            if(pathPoints[i].timing <= timing && timing < pathPoints[i+1].timing){
+                return xyTime(pathPoints[i].timing,pathPoints[i].amp,pathPoints[i+1].timing,pathPoints[i+1].amp,timing)
             }
         }
-        return xyTime(pathPoints.last().timing,pathPoints.last().amp,duration,0,time)
+        return xyTime(pathPoints.last().timing,pathPoints.last().amp,duration,0,timing)
     }
     private fun xyTime(x1 : Int, y1 : Int, x2 : Int, y2 : Int, time : Int) : Int = if(x1 == x2) y1 else (((y1 - y2) / (x1 - x2).toFloat()) * (time - x1) + y1).roundToInt()
 

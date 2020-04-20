@@ -12,19 +12,22 @@
         android:id="@+id/CardView_fragment_custom_card"
         android:layout_width="match_parent"
         android:layout_height="96dp"
-        android:background="#88ffffff"
+        android:background="#33000000"
         app:cardCornerRadius="2dp"
         android:clickable="true"
         app:cardUseCompatPadding="true">
         <RelativeLayout
             android:id="@+id/RelativeLayout_fragment_custom_itemLayout"
+            android:background="#33000000"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:orientation="vertical" >
+                    android:orientation="horizontal"
+                    android:layout_centerHorizontal="true"
+                    >
                     <ccdc.lib.customvibrator.VibeBlockView
                         android:id="@+id/VibeBlockView_fragment_custom_item"
                         android:scaleType="fitXY"
@@ -39,8 +42,9 @@
                 android:textSize="20sp"
                 android:text=""
                 android:textColor="@color/black"
-                android:layout_margin="4dp"
-                android:background="#88ffffff"/>
+                android:layout_margin="8dp"
+                android:background="#88ffffff"
+                android:layout_alignParentStart="true"/>
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>

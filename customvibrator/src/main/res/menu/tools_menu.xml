@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tools_cut"
+        android:title="cut"
+        />
+    <item
+        android:id="@+id/tools_expand"
+        android:title="expand"
+        />
+    <item
+        android:id="@+id/tools_AmpPoint"
+        android:title="AmpPoint"
+        />
+    <item
+        android:id="@+id/tools_AmpSize"
+        android:title="AmpSize"
+        />
+</menu>

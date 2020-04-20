@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ccdc.lib.customvibrator.CustomVibration
+import ccdc.lib.customvibrator.EditActivity
 import ccdc.lib.customvibrator.InputActivity
 import com.ccdc.vibrator.MainActivity
 import com.ccdc.vibrator.R
@@ -49,8 +50,8 @@ class FragmentCustom : Fragment() {
         //myList is separate CustomVibration's code name with '\'
         val pref = context!!.getSharedPreferences("customs", MODE_PRIVATE)
         val fileNames = pref.getString("myList","")?.split("\\")
-
         for (name in fileNames!!){
+            if(name == "") continue
             myDataSet.add(name)
         }
     }
@@ -87,6 +88,12 @@ class FragmentCustom : Fragment() {
         val customCallback = CustomCallback(viewAdapter, object : CustomCallbackActions(){
             override fun onRightClicked(position: Int) {
                 viewAdapter.removeItemAt(position)}
+
+            override fun onLeftClicked(position: Int) {
+                val intent = Intent(context,EditActivity::class.java)
+                intent.putExtra("fileName",myDataSet[position])
+                this@FragmentCustom.startActivityForResult(intent,7)
+            }
         })
         val itemTouchHelper = ItemTouchHelper(customCallback)
         itemTouchHelper.attachToRecyclerView(this.recyclerView)
@@ -142,6 +149,10 @@ class FragmentCustom : Fragment() {
                     val newFileName = mBundle.getString("newFileName","")
                     viewAdapter.add(newFileName)
                 }
+            }
+        }else if(requestCode == 7){
+            if(resultCode == RESULT_OK){
+                recyclerView.adapter?.notifyDataSetChanged()
             }
         }
     }

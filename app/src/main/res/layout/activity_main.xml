@@ -48,6 +48,8 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <FrameLayout
+                android:elevation="8dp"
+                android:background="#ffffff"
                 android:id="@+id/frame_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -57,7 +59,7 @@
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottomNavigationView"
                 app:cardUseCompatPadding="true"
-                android:elevation="40dp"
+                android:elevation="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:attr/windowBackground"

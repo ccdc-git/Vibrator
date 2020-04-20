@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageView_point"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="72dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView_workBoard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.664"
+        app:srcCompat="@android:drawable/presence_invisible" />
+
+    <Button
+        android:id="@+id/button_save"
+        android:text="저장"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.75" />
+
+    <ccdc.lib.customvibrator.WorkBoardView
+        android:id="@+id/imageView_workBoard"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:background="#E5000000"
+        android:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25" />
+    <ImageView
+        android:id="@+id/imageView_leftPin"
+        android:layout_width="16dp"
+        android:layout_height="128dp"
+        android:elevation="8dp"
+        android:scaleType="fitXY"
+        android:src="@mipmap/left_pin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView_workBoard" />
+    <TextView
+        android:id="@+id/textView_startPoint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/imageView_leftPin"
+        app:layout_constraintStart_toStartOf="@id/imageView_leftPin"
+        app:layout_constraintEnd_toEndOf="@id/imageView_leftPin"/>
+    <ImageView
+        android:id="@+id/imageView_rightPin"
+        android:layout_width="16dp"
+        android:layout_height="128dp"
+        android:elevation="8dp"
+        android:scaleType="fitXY"
+        android:src="@mipmap/right_pin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView_workBoard" />
+    <TextView
+        android:id="@+id/textView_endPoint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/imageView_rightPin"
+        app:layout_constraintStart_toStartOf="@id/imageView_rightPin"
+        app:layout_constraintEnd_toEndOf="@id/imageView_rightPin"/>
+    <TextView
+        android:id="@+id/textView_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        app:layout_constraintEnd_toStartOf="@+id/imageView_rightPin"
+        app:layout_constraintStart_toEndOf="@+id/imageView_leftPin"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_leftPin" />
+
+
+
+
+    <EditText
+        android:id="@+id/editText_command"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/button_save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:autofillHints="filename"
+        tools:ignore="LabelFor" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_save">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:text="2.block color" />
+
+            <EditText
+                android:id="@+id/editText_blockColor"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:autofillHints="black"
+                android:inputType="text"
+                android:layerType="none" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:text="3.duration" />
+
+            <EditText
+                android:id="@+id/editText_duration"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:inputType="text"
+                android:layerType="software" />
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

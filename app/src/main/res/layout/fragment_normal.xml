@@ -6,46 +6,54 @@
     tools:context="fragments.FragmentNormal">
 
     <LinearLayout
-        android:elevation="8dp"
         android:id="@+id/linearLayout_normal"
         android:layout_width="match_parent"
-        android:layout_height="96dp"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
+        android:clipToPadding="false"
         android:paddingHorizontal="8dp"
-        android:paddingTop="16dp">
+        android:paddingVertical="16dp">
 
-        <Button
-            android:elevation="16dp"
+        <TextView
+            android:elevation="16px"
+            android:clickable="true"
             android:id="@+id/Button_piano_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"
-            android:layout_margin="4dp"
-            android:text="piano_normal" />
+            android:layout_marginHorizontal="4dp"
+            android:text="piano_normal"
+            android:background="#ffffff"/>
 
-        <Button
-            android:elevation="16dp"
+        <TextView
+            android:elevation="16px"
+            android:clickable="true"
             android:id="@+id/Button_forte_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="forte_normal" />
+            android:text="forte_normal"
+            android:background="#ffffff" />
 
-        <Button
-            android:elevation="16dp"
+        <TextView
+            android:elevation="16px"
+            android:clickable="true"
             android:id="@+id/Button_crescendo_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="crescendo_normal" />
+            android:text="crescendo_normal"
+            android:background="#ffffff" />
 
-        <Button
-            android:elevation="16dp"
+        <TextView
+            android:elevation="16px"
+            android:clickable="true"
             android:id="@+id/Button_decrescendo_normal"
             android:layout_width="84dp"
             android:layout_height="84dp"
             android:layout_margin="4dp"
-            android:text="decrescendo_normal" />
+            android:text="decrescendo_normal"
+            android:background="#ffffff" />
 
     </LinearLayout>
 
