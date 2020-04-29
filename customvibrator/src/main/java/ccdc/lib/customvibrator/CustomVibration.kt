@@ -5,8 +5,6 @@ import android.graphics.*
 import android.os.Build
 import android.os.VibrationEffect
 import androidx.annotation.RequiresApi
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.lang.Exception
 import kotlin.math.roundToInt
 
@@ -27,6 +25,7 @@ data class AmpPoint(
 }
 
 class CustomVibration{
+    private val defaltPrefix = "CV_"
     private var originArrayOnOff : MutableList<OnOffVibration>
     private var originPathPoints: MutableList<AmpPoint>
     private var originDuration : Int = 0
@@ -76,7 +75,8 @@ class CustomVibration{
 
     //import from file
     @Throws(ImportWrongFileException::class)
-    constructor(fileInputStream: FileInputStream, fileName: String) {
+    constructor(context: Context, fileName: String) {
+        val fileInputStream = context.openFileInput(defaltPrefix + fileName)
         val importBytes =  fileInputStream.reader().readLines()
         /*
             1st line : originArrayOnOff
@@ -99,7 +99,7 @@ class CustomVibration{
     }
 
     //basic blocks
-    constructor(context: Context,codeName : String) {
+    constructor(context: Context,codeName : String, isBasic : Boolean) {
         //codeName = (세기)_(스타카토여부) ex)forte_staccato
         val arrayOnOffStrings = context.getString(context.resources.getIdentifier("${codeName}_ArrayOnOff","string",context.packageName)).split(',')
         val pathPointsStrings = context.getString(context.resources.getIdentifier("${codeName}_PathPoints","string",context.packageName)).split(',')
@@ -219,9 +219,10 @@ class CustomVibration{
     }
 
 
-    fun saveAsFile(fileOutputStream: FileOutputStream){
+    fun saveAsFile(context: Context, fileName: String){
 //        Log.i("save arrayOnOff", originArrayOnOff.toString())
 //        Log.i("save originPathPoints", originPathPoints.toString())
+        val fileOutputStream = context.openFileOutput(defaltPrefix + fileName, Context.MODE_PRIVATE)
         val stArOF = originArrayOnOff.joinToString("_")
         val stPP = originPathPoints.joinToString("_")
 
@@ -272,12 +273,12 @@ class CustomVibration{
             return xyTime(0,0,pathPoints[0].timing,pathPoints[0].amp,timing)
         }
         for (i in 0 until pathPoints.size-1){
-            if(pathPoints[i].timing <= timing && timing < pathPoints[i+1].timing){
+            if(pathPoints[i].timing <= timing && timing <= pathPoints[i+1].timing){
                 return xyTime(pathPoints[i].timing,pathPoints[i].amp,pathPoints[i+1].timing,pathPoints[i+1].amp,timing)
             }
         }
         return xyTime(pathPoints.last().timing,pathPoints.last().amp,duration,0,timing)
     }
-    private fun xyTime(x1 : Int, y1 : Int, x2 : Int, y2 : Int, time : Int) : Int = if(x1 == x2) y1 else (((y1 - y2) / (x1 - x2).toFloat()) * (time - x1) + y1).roundToInt()
+    private fun xyTime(x1 : Int, y1 : Int, x2 : Int, y2 : Int, time : Int) : Int = if(x1 == x2) {if(y1>y2)y1 else y2} else (((y1 - y2) / (x1 - x2).toFloat()) * (time - x1) + y1).roundToInt()
 
 }

@@ -88,7 +88,7 @@ constructor(context: Context, attr : AttributeSet? = null,defStyleAttr : Int = 0
         val downX = downEvent.x
         val downY = downEvent.y
         v.setOnTouchListener { v, event ->
-            Log.v("action",MotionEvent.actionToString(event.action))
+            //Log.v("action",MotionEvent.actionToString(event.action))
             if (event.action == MotionEvent.ACTION_MOVE){
                 if (abs(downX - event.x) > 25){
                     setTouchMoveHorizonListener(v, downX)

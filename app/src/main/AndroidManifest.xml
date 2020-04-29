@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ccdc.vibrator">
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.PROCESS_INCOMING_CALLS"/>
 
     <application
         android:allowBackup="true"
@@ -18,7 +21,23 @@
         </activity>
         <activity android:name="ccdc.lib.customvibrator.InputActivity"/>
         <activity android:name="ccdc.lib.customvibrator.EditActivity"/>
+        <service android:name=".NotificationListener"
+            android:label="@string/service_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+        <receiver android:name=".ServiceReceiver" android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
     </application>
-    <uses-permission android:name="android.permission.VIBRATE"/>
+
+
 
 </manifest>

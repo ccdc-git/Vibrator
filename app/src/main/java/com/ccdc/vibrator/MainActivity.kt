@@ -1,19 +1,22 @@
 package com.ccdc.vibrator
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Vibrator
-import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import ccdc.lib.customvibrator.CustomVibration
 import ccdc.lib.customvibrator.VibeBlockView
 import fragments.*
@@ -52,6 +55,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //권한 받아오기
+        if(applicationContext.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED){
+            //권한 없을때 받아오기
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE),200)
+        }
+
         val mDataSet: MutableList<CustomVibration> = mutableListOf()
         val vib : Vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         val myVibrator  = MyVibrator(vib,mDataSet)
@@ -88,10 +97,32 @@ class MainActivity : AppCompatActivity() {
 
         //touch
 
+        button_set.setOnClickListener {
+            if(!phoneStatePermissionGranted()){
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE),200)
+            }else{
+                val fOS = openFileOutput("phone_calling",Context.MODE_PRIVATE)
+                myVibrator.makeVibrationEffect()
+                fOS.write(myVibrator.timingsArrayAll.joinToString("\\").toByteArray())
+                fOS.write("\n".toByteArray())
+                fOS.write(myVibrator.amplitudeArrayAll.joinToString("\\").toByteArray())
+                fOS.close()
+                Toast.makeText(this,"적용됨",Toast.LENGTH_LONG).show()
+            }
+        }
+
 
     }//fin onCreate
 
+    private fun phoneStatePermissionGranted() : Boolean{
+        return applicationContext.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+    }
 
+    private fun notificationPermissionGranted() : Boolean{
+        //"android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
+        val sets = NotificationManagerCompat.getEnabledListenerPackages(this)
+        return sets.contains(packageName)
+    }
     @SuppressLint("ClickableViewAccessibility")
     fun setButton(button: TextView){
         val codeName : String = button.text.toString()
@@ -111,13 +142,13 @@ class MainActivity : AppCompatActivity() {
         }
         button.setOnClickListener {
             it.elevation = 16F
-            myRVC.addItemAt(myRVC.size,CustomVibration(this, codeName))
+            myRVC.addItemAt(myRVC.size,CustomVibration(this, codeName, true))
         }
     }
     fun addInMyRVC(codeName : String){
         try {
             val fIS: FileInputStream = openFileInput(codeName)
-            myRVC.addItemAt(myRVC.size, CustomVibration(fIS, codeName))
+            myRVC.addItemAt(myRVC.size, CustomVibration(this, codeName))
         }catch (e: FileNotFoundException){
         }
     }

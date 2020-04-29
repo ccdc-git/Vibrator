@@ -1,5 +1,5 @@
 package ccdc.lib.customvibrator
-
+//630479983195 cj 대한통운
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipDescription
@@ -7,14 +7,13 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.LayerDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.TypedValue
 import android.view.DragEvent
 import android.view.Gravity
 import android.view.MotionEvent
@@ -22,9 +21,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.graphics.drawable.toDrawable
 import kotlinx.android.synthetic.main.activity_editor.*
-import kotlin.math.roundToInt
 
 class EditActivity : AppCompatActivity() {
     var leftEnd : Int = 0
@@ -53,24 +50,21 @@ class EditActivity : AppCompatActivity() {
         //파일 이름으로 customVibration 불러오기
 
         val fileName = if( intent.extras == null) "" else  intent.extras?.getString("fileName").toString()
-
-        //Log.v("getFileName", fileName)
-        val fIS = openFileInput(fileName)
-        val cV = CustomVibration(fIS,fileName)
+        val cV = CustomVibration(this,fileName)
         setWorkBoard(cV,imageView_workBoard)
         editText_blockColor.setText("black")
         editText_duration.setText(cV.duration.toString())
 
         //버튼 누르면 저장
         button_save.setOnClickListener {
-            val fOS = openFileOutput(fileName,Context.MODE_PRIVATE)
-            imageView_workBoard.makeNewCustomVibration().saveAsFile(fOS)
+            imageView_workBoard.makeNewCustomVibration().saveAsFile(this,fileName)
             setResult(Activity.RESULT_OK)
             finish()
         }
 
         val vib =getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        vib.vibrate(VibrationEffect.createWaveform(cV.getTimingsArray().toLongArray(),cV.getAmplitudesArray().toIntArray(),-1))
+        vib.vibrate(VibrationEffect.createWaveform(cV.getTimingsArray().toLongArray(),cV.getAmplitudesArray().toIntArray(),-1)) // 처음 진동
+
         //필요한 값들
         val displayMetrics = DisplayMetrics()
         val cVBitmapWidth = (imageView_workBoard.layoutParams.height * cV.duration / 1000F).toInt()
@@ -81,7 +75,8 @@ class EditActivity : AppCompatActivity() {
         rightEnd = (displayWidth + cVBitmapWidth)/2
 
         //workBoard 초기 설정
-        imageView_workBoard.setWorkBoard(cV, displayWidth, imageView_leftPin.width) //실제에선 CustomVibration 을 받을지도
+        imageView_workBoard.setWorkBoard(cV, displayWidth, imageView_leftPin.width)
+        imageView_workBoard.pointImageView = imageView_point
 
 
 
@@ -99,8 +94,8 @@ class EditActivity : AppCompatActivity() {
 
 
         //움직임 설정
-        setLeftPinDownListener(imageView_leftPin)
-        setRightPinDownListener(imageView_rightPin)
+        setLeftPinDownListener(view_leftPin_touch)
+        setRightPinDownListener(view_rightPin_touch)
 
         //point
         imageView_point.setOnLongClickListener {v : View ->
@@ -117,7 +112,7 @@ class EditActivity : AppCompatActivity() {
                         return@setOnDragListener true
                     return@setOnDragListener false
                 }
-                DragEvent.ACTION_DROP , DragEvent.ACTION_DRAG_LOCATION ->{
+                DragEvent.ACTION_DROP , DragEvent.ACTION_DRAG_LOCATION , DragEvent.ACTION_DRAG_EXITED , DragEvent.ACTION_DRAG_ENTERED , DragEvent.ACTION_DRAG_ENDED ->{
                     (v as WorkBoardView).newAmpPoint(event)
                     return@setOnDragListener true
                 }
@@ -133,8 +128,8 @@ class EditActivity : AppCompatActivity() {
         view.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_MOVE){
                 val dx = event.x - lastX
-                Log.v("dx","$dx  $lastX")
-                val params = (v.layoutParams as ConstraintLayout.LayoutParams)
+                //Log.v("dx","$dx  $lastX")
+                val params = (imageView_leftPin.layoutParams as ConstraintLayout.LayoutParams)
                 params.marginStart += dx.toInt()
 
                 if(params.marginStart + params.width > imageView_rightPin.x){
@@ -142,12 +137,12 @@ class EditActivity : AppCompatActivity() {
                 }else if(params.marginStart + params.width < leftEnd){
                     params.marginStart = leftEnd - params.width
                 }
-                v.layoutParams = params
+                imageView_leftPin.layoutParams = params
             }else{
                 setLeftPinDownListener(v)
             }
-            v.invalidate()
-            imageView_workBoard.leftX = ((v.layoutParams as ConstraintLayout.LayoutParams).marginStart + v.width)
+            imageView_leftPin.invalidate()
+            imageView_workBoard.leftX = ((imageView_leftPin.layoutParams as ConstraintLayout.LayoutParams).marginStart + imageView_leftPin.width)
             imageView_workBoard.refreshWorkBoardDrawable(false,true,false)
             refreshTextView()
             return@setOnTouchListener false
@@ -169,24 +164,22 @@ class EditActivity : AppCompatActivity() {
         view.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_MOVE){
                 val dx = event.x - lastX
-                Log.v("dx",dx.toString())
-                val params = (v.layoutParams as ConstraintLayout.LayoutParams)
+                //Log.v("dx",dx.toString())
+                val params = ( imageView_rightPin.layoutParams as ConstraintLayout.LayoutParams)
                 params.marginEnd += -1 * dx.toInt()
                 if(imageView_workBoard.width - (params.marginEnd + params.width) < (imageView_leftPin.x + params.width)){
                     params.marginEnd = (imageView_workBoard.width - imageView_leftPin.x - params.width * 2 ).toInt()
                 }else if(imageView_workBoard.width - (params.marginEnd + params.width) > rightEnd){
                     params.marginEnd = imageView_workBoard.width - params.width - rightEnd
                 }
-                v.layoutParams = params
+                imageView_rightPin.layoutParams = params
             }else{
                 setRightPinDownListener(v)
             }
-            v.invalidate()
-            imageView_workBoard.rightX = (v.layoutParams as ConstraintLayout.LayoutParams).marginEnd + v.width
+            imageView_rightPin.invalidate()
+            imageView_workBoard.rightX = (imageView_rightPin.layoutParams as ConstraintLayout.LayoutParams).marginEnd + imageView_rightPin.width
             imageView_workBoard.refreshWorkBoardDrawable(false,true,false)
             refreshTextView()
-
-
             return@setOnTouchListener false
         }
     }
@@ -194,6 +187,8 @@ class EditActivity : AppCompatActivity() {
         view.setOnTouchListener { v, event ->
             when(event.action){
                 MotionEvent.ACTION_DOWN -> {
+                    val ex = event.rawX - dPtoPX(24F)
+                    if(ex - view_leftPin_touch.x < view_rightPin_touch.x - ex) return@setOnTouchListener false
                     setRightPinMoveListener(v,event)
                     return@setOnTouchListener true
                 }
@@ -215,8 +210,9 @@ class EditActivity : AppCompatActivity() {
         bitmapDrawable.gravity = Gravity.CENTER
         iV.setImageDrawable(bitmapDrawable)
     }
+    private fun dPtoPX(dp : Float) : Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics).toInt()
 }//EditActivity
-private class MyDragShadowBuilder(v: View) : View.DragShadowBuilder(v) {
+class MyDragShadowBuilder(v: View) : View.DragShadowBuilder(v) {
 
     private val shadow = ColorDrawable(Color.LTGRAY)
 

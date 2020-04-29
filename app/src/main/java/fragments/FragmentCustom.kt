@@ -105,7 +105,7 @@ class FragmentCustom : Fragment() {
         (rootView.floatingActionButton_add_custom.layoutParams as ConstraintLayout.LayoutParams).bottomMargin = mainActivity.findViewById<BottomNavigationView>(R.id.bottomNavigationView).height + dpToPx(16F,context!!)
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                Log.v("scroll","$dx $dy")
+                //Log.v("scroll","$dx $dy")
                 super.onScrolled(recyclerView, dx, dy)
                 val bottomNavi : BottomNavigationView = mainActivity.findViewById(R.id.bottomNavigationView)
                 val floatingButton = rootView.floatingActionButton_add_custom

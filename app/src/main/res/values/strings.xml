@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Vibrator</string>
+    <string name="service_name">noty</string>
 </resources>

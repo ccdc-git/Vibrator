@@ -37,12 +37,12 @@ class CustomAdaptor(private var myDataSet: MutableList<String> , private var onC
 
         holder.recyclerItem.CardView_fragment_custom_card.setOnTouchListener{v, event ->
             if(event.action == MotionEvent.ACTION_DOWN){
-                Log.v("v","ACTION_DOWN")
+                //Log.v("v","ACTION_DOWN")
                 if(v.isClickable) setUpTouch(v,event)
             }
             return@setOnTouchListener false
         }
-        holder.recyclerItem.VibeBlockView_fragment_custom_item.customVibration = CustomVibration(mContext!!.openFileInput(myDataSet[position]),myDataSet[position])
+        holder.recyclerItem.VibeBlockView_fragment_custom_item.customVibration = CustomVibration(mContext!!,myDataSet[position])
         (holder.recyclerItem.TextView_fragment_custom_title as TextView).text = myDataSet[position]
         holder.recyclerItem.VibeBlockView_fragment_custom_item.setBlock(96F)
 
@@ -50,7 +50,7 @@ class CustomAdaptor(private var myDataSet: MutableList<String> , private var onC
     private fun setUpTouch(v : View, e: MotionEvent){
         v.setOnTouchListener{v, event ->
             if(event.action == MotionEvent.ACTION_UP){
-                Log.v("v","mClicked")
+//                Log.v("v","mClicked")
                 //선택됨
                 onCustomInput.itemClicked(v.TextView_fragment_custom_title.text.toString())
             }
@@ -59,7 +59,7 @@ class CustomAdaptor(private var myDataSet: MutableList<String> , private var onC
             }
             v.setOnTouchListener { v, event ->
                 if(event.action == MotionEvent.ACTION_DOWN){
-                    Log.v("v","ACTION_DOWN")
+//                    Log.v("v","ACTION_DOWN")
                     if(v.isClickable) setUpTouch(v,event)
                 }
                 false
@@ -94,7 +94,6 @@ class CustomAdaptor(private var myDataSet: MutableList<String> , private var onC
     }
     fun add(fileName: String): Boolean {
         return try {
-            val fIS : FileInputStream = mContext!!.openFileInput(fileName)
             this.myDataSet.add(myDataSet.size,fileName)
             this.notifyItemInserted(myDataSet.size)
             updatePreference()

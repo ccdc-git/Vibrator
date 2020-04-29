@@ -8,9 +8,10 @@
 
     <ImageView
         android:id="@+id/imageView_point"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginStart="72dp"
+        android:padding="12dp"
         app:layout_constraintBottom_toTopOf="@+id/imageView_workBoard"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,6 +29,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.75" />
 
+    <!--    leftPin   -->
     <ccdc.lib.customvibrator.WorkBoardView
         android:id="@+id/imageView_workBoard"
         android:layout_width="match_parent"
@@ -36,9 +38,11 @@
         android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.25" />
+
     <ImageView
         android:id="@+id/imageView_leftPin"
         android:layout_width="16dp"
@@ -55,6 +59,16 @@
         app:layout_constraintTop_toBottomOf="@id/imageView_leftPin"
         app:layout_constraintStart_toStartOf="@id/imageView_leftPin"
         app:layout_constraintEnd_toEndOf="@id/imageView_leftPin"/>
+    <View
+        android:id="@+id/view_leftPin_touch"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_leftPin"
+        app:layout_constraintStart_toStartOf="@id/imageView_leftPin"
+        app:layout_constraintEnd_toEndOf="@id/imageView_leftPin" />
+
+
+<!--    rightPin   -->
     <ImageView
         android:id="@+id/imageView_rightPin"
         android:layout_width="16dp"
@@ -71,6 +85,17 @@
         app:layout_constraintTop_toBottomOf="@id/imageView_rightPin"
         app:layout_constraintStart_toStartOf="@id/imageView_rightPin"
         app:layout_constraintEnd_toEndOf="@id/imageView_rightPin"/>
+
+    <View
+        android:id="@+id/view_rightPin_touch"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_rightPin"
+        app:layout_constraintEnd_toEndOf="@id/imageView_rightPin"
+        app:layout_constraintStart_toStartOf="@id/imageView_rightPin" />
+
+
+
     <TextView
         android:id="@+id/textView_duration"
         android:layout_width="wrap_content"
@@ -80,21 +105,6 @@
         app:layout_constraintStart_toEndOf="@+id/imageView_leftPin"
         app:layout_constraintTop_toBottomOf="@+id/imageView_leftPin" />
 
-
-
-
-    <EditText
-        android:id="@+id/editText_command"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:imeOptions="actionDone"
-        android:inputType="text"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/button_save"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:autofillHints="filename"
-        tools:ignore="LabelFor" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -145,7 +155,6 @@
 
 
     </LinearLayout>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

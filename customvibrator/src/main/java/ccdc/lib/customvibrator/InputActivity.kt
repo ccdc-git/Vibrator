@@ -95,8 +95,7 @@ class InputActivity : AppCompatActivity() {
                 }
             } //파일이름이 안바뀌었으면 그대로 덮어씌우기
             return try {
-                val fOS = openFileOutput(newFileName, Context.MODE_PRIVATE)
-                customVibration.saveAsFile(fOS)
+                customVibration.saveAsFile(this, newFileName)
                 fileName = newFileName
                 true
             }catch (e:FileNotFoundException){

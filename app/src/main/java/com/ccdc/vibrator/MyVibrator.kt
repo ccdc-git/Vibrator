@@ -10,8 +10,13 @@ class MyVibrator(val vibrator: Vibrator, val mDataset : MutableList<CustomVibrat
     lateinit var timingsArrayAll : MutableList<Long>
     lateinit var amplitudeArrayAll : MutableList<Int>
     fun vibrate(){
+        val vibrationEffect = makeVibrationEffect()
+        if(vibrationEffect == null) return
+        else  vibrator.vibrate(vibrationEffect)
+    }
+    fun makeVibrationEffect() : VibrationEffect? {
         if(mDataset.isEmpty()){
-            return
+            return null
         }
         timingsArrayAll = mutableListOf()
         amplitudeArrayAll = mutableListOf()
@@ -23,14 +28,13 @@ class MyVibrator(val vibrator: Vibrator, val mDataset : MutableList<CustomVibrat
 
         if(amplitudeArrayAll.size == 0){
             Log.d("size", "something wrong")
-            return
+            return null
         }
         if(!smoothing()){
             Log.d("smoothing", "something wrong")
-            return
+            return null
         }
-        vibrator.vibrate(VibrationEffect.createWaveform(timingsArrayAll.toLongArray(),amplitudeArrayAll.toIntArray(),-1))
-
+        return VibrationEffect.createWaveform(timingsArrayAll.toLongArray(), amplitudeArrayAll.toIntArray(),-1)
     }
 
 
